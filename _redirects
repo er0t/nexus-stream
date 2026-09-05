@@ -1,0 +1,3 @@
+# Redirects & Static Routing for Cloudflare Pages / Netlify
+/privacy    /privacy.html    200
+/app-ads.txt /app-ads.txt   200

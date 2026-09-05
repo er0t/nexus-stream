@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Privacy Policy - Nexus Streaming Ecosystem</title>
+  <meta name="description" content="Privacy Policy and terms for Nexus HD and Nexus TV applications.">
+  <link rel="icon" type="image/png" href="./assets/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          colors: {
+            obsidian: '#0a0d14',
+            surface: '#0f172a',
+            cyanAccent: '#06b6d4',
+            emeraldAccent: '#10b981',
+          }
+        }
+      }
+    }
+  </script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    body {
+      background-color: #0a0d14;
+      color: #f8fafc;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-[#0a0d14] text-slate-100 min-h-screen flex flex-col selection:bg-cyan-500/30 selection:text-cyan-300">
+  <!-- Ambient background glow -->
+  <div class="fixed inset-0 pointer-events-none overflow-hidden z-0">
+    <div class="absolute -top-40 left-1/2 -translate-x-1/2 w-[700px] h-[500px] bg-cyan-500/10 rounded-full blur-[120px]"></div>
+    <div class="absolute top-1/2 -right-40 w-[500px] h-[500px] bg-emerald-500/5 rounded-full blur-[140px]"></div>
+  </div>
+
+  <!-- Header / Navigation -->
+  <header class="relative z-10 border-b border-slate-800/80 bg-slate-950/60 backdrop-blur-md sticky top-0">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      <a href="./index.html" class="flex items-center gap-3 group">
+        <div class="w-9 h-9 rounded-xl overflow-hidden shadow-lg shadow-cyan-500/20 border border-slate-700/80 p-0.5 bg-slate-900 group-hover:border-cyan-500/60 transition-colors">
+          <img src="./assets/logo.png" alt="Nexus Logo" class="w-full h-full object-cover rounded-lg">
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="font-extrabold text-lg tracking-wider text-white">NEXUS</span>
+          <span class="text-xs px-2 py-0.5 rounded-full bg-slate-800/80 text-cyan-400 border border-slate-700 font-mono">ECOSYSTEM</span>
+        </div>
+      </a>
+      <a href="./index.html" class="flex items-center gap-2 text-sm text-slate-400 hover:text-cyan-400 transition-colors">
+        <i data-lucide="arrow-left" class="w-4 h-4"></i>
+        <span>Back to Home</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- Content -->
+  <main class="relative z-10 flex-1 max-w-4xl mx-auto px-4 sm:px-6 py-12">
+    <div class="bg-slate-900/70 border border-slate-800 rounded-2xl p-6 sm:p-10 backdrop-blur-md shadow-2xl shadow-black/40">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
+          <i data-lucide="shield-check" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Privacy Policy</h1>
+          <p class="text-xs sm:text-sm text-slate-400">Effective Date: September 2026 • Applies to Nexus HD & Nexus TV</p>
+        </div>
+      </div>
+
+      <div class="space-y-8 text-slate-300 text-sm leading-relaxed">
+        <section>
+          <h2 class="text-lg font-bold text-white mb-2 flex items-center gap-2">
+            <i data-lucide="info" class="w-4 h-4 text-cyan-400"></i>
+            1. Overview & Commitment
+          </h2>
+          <p>
+            Nexus HD (Mobile & Tablet) and Nexus TV (Android TV & Fire TV) are committed to respecting and protecting user privacy. 
+            Our applications are designed with zero mandatory registration, no account creation, and no collection of personally identifiable information (PII) such as real names, home addresses, phone numbers, or credit card information.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="text-lg font-bold text-white mb-2 flex items-center gap-2">
+            <i data-lucide="database" class="w-4 h-4 text-cyan-400"></i>
+            2. Local Device Storage
+          </h2>
+          <p>
+            All watch status records (such as completed episodes, watch history, and resume playback timestamps) are saved purely in your device's local memory (<code class="bg-slate-800 px-1.5 py-0.5 rounded text-cyan-300 text-xs">SharedPreferences</code>). 
+            This data never leaves your device and is not synchronized to external personal user databases.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="text-lg font-bold text-white mb-2 flex items-center gap-2">
+            <i data-lucide="radio" class="w-4 h-4 text-cyan-400"></i>
+            3. Advertising & Analytics (Start.io)
+          </h2>
+          <p>
+            Nexus is ad-supported and free to use without subscription fees. We integrate industry-standard ad SDKs (such as Start.io) to deliver banner and interstitial advertisements. 
+            These SDKs may collect non-personal, anonymized technical telemetry such as device model, operating system version, coarse geographic location (country or region), and advertising identifiers (e.g., Google Advertising ID) solely for ad delivery, fraud prevention, and frequency capping.
+          </p>
+          <p class="mt-2">
+            For more details on Start.io's privacy practices, please visit the <a href="https://www.start.io/policy/privacy-policy/" target="_blank" rel="noopener noreferrer" class="text-cyan-400 hover:underline">Start.io Privacy Policy</a>. 
+            You can reset your Advertising ID or opt out of personalized interest-based advertising at any time via your Android or Fire TV Device Settings.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="text-lg font-bold text-white mb-2 flex items-center gap-2">
+            <i data-lucide="file-text" class="w-4 h-4 text-cyan-400"></i>
+            4. Stream Indexing & Third-Party Content Disclaimer
+          </h2>
+          <p>
+            Nexus HD and Nexus TV operate exclusively as a client-side media scraper and player interface. We do not host, store, upload, or manage any audiovisual media files on our own servers. 
+            All stream links and metadata are indexed from publicly accessible online third-party repositories. We do not control or endorse the content hosted by these external services.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="text-lg font-bold text-white mb-2 flex items-center gap-2">
+            <i data-lucide="mail" class="w-4 h-4 text-cyan-400"></i>
+            5. Contact & Inquiries
+          </h2>
+          <p>
+            If you have questions regarding this Privacy Policy or crawler verification, please review our official publisher file at <a href="./app-ads.txt" class="text-cyan-400 hover:underline">/app-ads.txt</a> or contact our technical team at <span class="text-slate-200 font-mono">support@nexus-stream.internal</span>.
+          </p>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="relative z-10 border-t border-slate-800/80 bg-slate-950/80 py-6 text-center text-xs text-slate-500">
+    <div class="max-w-5xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <p>© 2026 Nexus Streaming Ecosystem. All rights reserved.</p>
+      <div class="flex items-center gap-6">
+        <a href="./index.html" class="hover:text-cyan-400 transition-colors">Home</a>
+        <a href="./app-ads.txt" class="hover:text-cyan-400 transition-colors">app-ads.txt</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    lucide.createIcons();
+  </script>
+</body>
+</html>

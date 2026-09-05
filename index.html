@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nexus Ecosystem - Stream Without Interruptions | Nexus HD & Nexus TV</title>
+  <meta name="description" content="Download Nexus HD for Android Mobile and Nexus TV for Android TV & Firestick. Clean streaming, gesture controls, 4K/1080p, and zero mid-roll video interruptions.">
+  <meta name="keywords" content="Nexus HD, Nexus TV, Android TV streaming, Firestick Downloader, APK download, Ad-Supported streaming">
+  
+  <!-- Open Graph -->
+  <meta property="og:title" content="Nexus Ecosystem - Stream Without Interruptions">
+  <meta property="og:description" content="Engineered for Android Mobile, Tablets, and Android TV / Fire TV. Fast, clean, distraction-free streaming.">
+  <meta property="og:image" content="./assets/logo.png">
+  <meta property="og:type" content="website">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="./assets/logo.png">
+
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            obsidian: {
+              DEFAULT: '#0a0d14',
+              surface: '#0d121d',
+              card: 'rgba(15, 23, 42, 0.7)',
+              border: '#1e293b'
+            },
+            cyanAccent: {
+              DEFAULT: '#06b6d4',
+              glow: 'rgba(6, 182, 212, 0.25)',
+              hover: '#0891b2'
+            },
+            emeraldAccent: {
+              DEFAULT: '#10b981',
+              glow: 'rgba(16, 185, 129, 0.25)',
+              hover: '#059669'
+            }
+          },
+          boxShadow: {
+            'glow-cyan': '0 0 25px -5px rgba(6, 182, 212, 0.35)',
+            'glow-emerald': '0 0 25px -5px rgba(16, 185, 129, 0.35)',
+            'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.37)'
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    body {
+      background-color: #0a0d14;
+      color: #f8fafc;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .glass-panel {
+      background: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(51, 65, 85, 0.5);
+    }
+    .glass-panel:hover {
+      border-color: rgba(71, 85, 105, 0.8);
+    }
+    .text-gradient-cyan {
+      background: linear-gradient(135deg, #ffffff 30%, #06b6d4 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .text-gradient-emerald {
+      background: linear-gradient(135deg, #ffffff 30%, #10b981 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    /* Subtle dot grid pattern */
+    .bg-grid-pattern {
+      background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+      background-size: 28px 28px;
+    }
+  </style>
+</head>
+<body class="bg-[#0a0d14] text-slate-100 min-h-screen relative overflow-x-hidden selection:bg-cyan-500/30 selection:text-cyan-300">
+
+  <!-- Ambient background glow elements -->
+  <div class="fixed inset-0 pointer-events-none overflow-hidden z-0">
+    <div class="absolute -top-48 left-1/2 -translate-x-1/2 w-[850px] h-[550px] bg-cyan-500/10 rounded-full blur-[140px]"></div>
+    <div class="absolute top-[35%] -left-48 w-[600px] h-[600px] bg-emerald-500/8 rounded-full blur-[150px]"></div>
+    <div class="absolute top-[65%] -right-48 w-[650px] h-[650px] bg-cyan-500/8 rounded-full blur-[160px]"></div>
+  </div>
+
+  <!-- Background grid overlay -->
+  <div class="fixed inset-0 pointer-events-none bg-grid-pattern opacity-40 z-0"></div>
+
+  <!-- Main Container -->
+  <div class="relative z-10 flex flex-col min-h-screen">
+
+    <!-- Header / Navbar -->
+    <header class="sticky top-0 z-50 border-b border-slate-800/80 bg-slate-950/70 backdrop-blur-md">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+        <!-- Brand Logo -->
+        <a href="#hero" class="flex items-center gap-3 group">
+          <div class="relative w-10 h-10 rounded-xl overflow-hidden shadow-lg shadow-cyan-500/20 border border-slate-700/80 p-0.5 bg-slate-900 group-hover:border-cyan-500/80 transition-all duration-300">
+            <img src="./assets/logo.png" alt="Nexus Logo" class="w-full h-full object-cover rounded-lg">
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="font-extrabold text-xl tracking-wider text-white">NEXUS</span>
+            <span class="text-[10px] tracking-wider px-2 py-0.5 rounded-full bg-slate-800 text-cyan-400 border border-slate-700 font-mono font-semibold">STREAM</span>
+          </div>
+        </a>
+
+        <!-- Desktop Navigation Links -->
+        <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-slate-300">
+          <a href="#downloads" class="hover:text-cyan-400 transition-colors flex items-center gap-1.5">
+            <i data-lucide="download" class="w-4 h-4 text-cyan-400"></i>
+            Downloads
+          </a>
+          <a href="#features" class="hover:text-cyan-400 transition-colors flex items-center gap-1.5">
+            <i data-lucide="sparkles" class="w-4 h-4 text-emerald-400"></i>
+            Features
+          </a>
+          <a href="#install-guide" class="hover:text-cyan-400 transition-colors flex items-center gap-1.5">
+            <i data-lucide="book-open" class="w-4 h-4 text-slate-400"></i>
+            Install Guide
+          </a>
+          <a href="./app-ads.txt" class="hover:text-cyan-400 transition-colors font-mono text-xs text-slate-400 border border-slate-800 px-2 py-1 rounded bg-slate-900/50">
+            app-ads.txt
+          </a>
+        </nav>
+
+        <!-- Header CTA Button -->
+        <div class="flex items-center gap-3">
+          <a href="#downloads" class="hidden sm:inline-flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-lg bg-gradient-to-r from-cyan-500 to-emerald-500 text-slate-950 hover:brightness-110 shadow-lg shadow-cyan-500/20 transition-all">
+            <i data-lucide="arrow-down-circle" class="w-3.5 h-3.5"></i>
+            <span>Get APKs</span>
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="hero" class="pt-14 pb-16 sm:pt-20 sm:pb-24 px-4 sm:px-6 lg:px-8 text-center max-w-5xl mx-auto">
+      <!-- Status Badge -->
+      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-900/90 border border-slate-800 text-xs font-semibold text-slate-300 shadow-xl mb-6 backdrop-blur-sm animate-fade-in">
+        <span class="flex h-2 w-2 relative">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+        </span>
+        <span class="text-white font-bold">v1.2 Stable</span>
+        <span class="text-slate-600">•</span>
+        <span class="text-emerald-400 font-medium">Ad-Supported & 100% Free</span>
+      </div>
+
+      <!-- Hero Logo Visual Presentation -->
+      <div class="flex justify-center mb-6">
+        <div class="relative group">
+          <div class="absolute -inset-2 bg-gradient-to-r from-cyan-500 to-emerald-500 rounded-2xl blur-xl opacity-40 group-hover:opacity-60 transition duration-500"></div>
+          <div class="relative w-24 h-24 sm:w-28 sm:h-28 rounded-2xl overflow-hidden border border-slate-700/80 bg-slate-950 p-1 shadow-2xl">
+            <img src="./assets/logo.png" alt="Nexus App Icon" class="w-full h-full object-cover rounded-xl shadow-inner">
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Headline -->
+      <h1 class="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-tight mb-5">
+        Stream Without Interruptions.<br>
+        <span class="text-gradient-cyan">Engineered for Mobile</span> & <span class="text-gradient-emerald">Android TV</span>.
+      </h1>
+
+      <!-- Subtext -->
+      <p class="text-base sm:text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed mb-8">
+        Experience lightning-fast HD and 4K catalog streams with an ultra-clean, minimalist interface. Built with gesture playback controls, intelligent watch state sync, and <span class="text-emerald-400 font-semibold">zero mid-roll video interruptions</span>.
+      </p>
+
+      <!-- Key Metric Pills -->
+      <div class="flex flex-wrap items-center justify-center gap-3 sm:gap-4 text-xs font-medium text-slate-400">
+        <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-900/60 border border-slate-800">
+          <i data-lucide="zap" class="w-3.5 h-3.5 text-cyan-400"></i>
+          <span>Multi-Source Fallback</span>
+        </div>
+        <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-900/60 border border-slate-800">
+          <i data-lucide="tv" class="w-3.5 h-3.5 text-emerald-400"></i>
+          <span>D-Pad Leanback UI</span>
+        </div>
+        <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-900/60 border border-slate-800">
+          <i data-lucide="shield-check" class="w-3.5 h-3.5 text-cyan-400"></i>
+          <span>No Mandatory Sign-Up</span>
+        </div>
+        <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-900/60 border border-slate-800">
+          <i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-emerald-400"></i>
+          <span>Episode Watched Badges</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Dual Download Action Cards Section -->
+    <section id="downloads" class="py-12 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto w-full">
+      <div class="text-center mb-10">
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Choose Your Platform</h2>
+        <p class="text-sm text-slate-400 mt-2">Direct APK downloads without bloated app store wrappers or forced subscriptions.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch">
+        
+        <!-- CARD 1: Nexus HD (Android Mobile & Tablet) -->
+        <div class="glass-panel rounded-2xl p-6 sm:p-8 flex flex-col justify-between shadow-2xl relative group overflow-hidden border border-slate-800 hover:border-cyan-500/50 transition-all duration-300">
+          <!-- Ambient Card Accent Glow -->
+          <div class="absolute top-0 right-0 w-36 h-36 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-cyan-500/20 transition-all"></div>
+          
+          <div>
+            <!-- Header & Badge -->
+            <div class="flex items-center justify-between mb-4">
+              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-cyan-500/10 text-cyan-400 border border-cyan-500/30">
+                <i data-lucide="smartphone" class="w-3.5 h-3.5"></i>
+                Mobile & Tablet
+              </span>
+              <span class="text-xs font-mono text-slate-400 bg-slate-950 px-2 py-0.5 rounded border border-slate-800">APK • ~13 MB</span>
+            </div>
+
+            <!-- Title -->
+            <h3 class="text-2xl font-black text-white flex items-center gap-2.5 mb-2">
+              <span>Nexus HD</span>
+              <span class="text-xs font-semibold px-2 py-0.5 rounded bg-slate-800 text-slate-300 font-mono">v1.2</span>
+            </h3>
+            <p class="text-sm text-slate-400 leading-relaxed mb-6">
+              Engineered specifically for handheld touch devices. Fast dynamic media exploration, seamless subtitle switcher, and responsive gestures.
+            </p>
+
+            <!-- Specs & Feature List -->
+            <div class="space-y-3 mb-8 text-sm text-slate-300">
+              <div class="flex items-center gap-3">
+                <div class="w-6 h-6 rounded-lg bg-cyan-500/10 flex items-center justify-center text-cyan-400 flex-shrink-0">
+                  <i data-lucide="check" class="w-4 h-4"></i>
+                </div>
+                <span><strong>OS Compatibility:</strong> Android 7.0+ (Nougat through 14+)</span>
+              </div>
+              <div class="flex items-center gap-3">
+                <div class="w-6 h-6 rounded-lg bg-cyan-500/10 flex items-center justify-center text-cyan-400 flex-shrink-0">
+                  <i data-lucide="sliders" class="w-4 h-4"></i>
+                </div>
+                <span><strong>Gesture Controls:</strong> Brightness, volume & swipe seeking</span>
+              </div>
+              <div class="flex items-center gap-3">
+                <div class="w-6 h-6 rounded-lg bg-cyan-500/10 flex items-center justify-center text-cyan-400 flex-shrink-0">
+                  <i data-lucide="check-circle" class="w-4 h-4"></i>
+                </div>
+                <span><strong>Watched Status Badges:</strong> Auto 90% completion tracking</span>
+              </div>
+              <div class="flex items-center gap-3">
+                <div class="w-6 h-6 rounded-lg bg-cyan-500/10 flex items-center justify-center text-cyan-400 flex-shrink-0">
+                  <i data-lucide="layers" class="w-4 h-4"></i>
+                </div>
+                <span><strong>Content Differentiation:</strong> Clean Movie vs Series layouts</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Action CTA -->
+          <div class="pt-4 border-t border-slate-800/80">
+            <a href="./NexusHD.apk" download="NexusHD.apk" class="w-full flex items-center justify-center gap-3 px-6 py-4 rounded-xl font-extrabold text-sm text-slate-950 bg-gradient-to-r from-cyan-400 to-cyan-500 hover:from-cyan-300 hover:to-cyan-400 shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 transform active:scale-[0.99] transition-all">
+              <i data-lucide="download" class="w-5 h-5"></i>
+              <span>Download Nexus HD (Mobile APK)</span>
+            </a>
+            <p class="text-[11px] text-center text-slate-500 mt-2.5">Direct APK • SHA-256 Verified • No Play Store Needed</p>
+          </div>
+        </div>
+
+        <!-- CARD 2: Nexus TV (Android TV & Fire TV) -->
+        <div class="glass-panel rounded-2xl p-6 sm:p-8 flex flex-col justify-between shadow-2xl relative group overflow-hidden border border-slate-800 hover:border-emerald-500/50 transition-all duration-300">
+          <!-- Ambient Card Accent Glow -->
+          <div class="absolute top-0 right-0 w-36 h-36 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-emerald-500/20 transition-all"></div>
+          
+          <div>
+            <!-- Header & Badge -->
+            <div class="flex items-center justify-between mb-4">
+              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+                <i data-lucide="tv" class="w-3.5 h-3.5"></i>
+                Android TV & Firestick
+              </span>
+              <span class="text-xs font-mono text-slate-400 bg-slate-950 px-2 py-0.5 rounded border border-slate-800">APK • ~12.6 MB</span>
+            </div>
+
+            <!-- Title -->
+            <h3 class="text-2xl font-black text-white flex items-center gap-2.5 mb-2">
+              <span>Nexus TV</span>
+              <span class="text-xs font-semibold px-2 py-0.5 rounded bg-slate-800 text-slate-300 font-mono">v1.2</span>
+            </h3>
+            <p class="text-sm text-slate-400 leading-relaxed mb-6">
+              Custom-built Android Leanback interface designed for 10-foot television screens, remotes, and Amazon Fire TV sticks.
+            </p>
+
+            <!-- Specs & Feature List -->
+            <div class="space-y-3 mb-6 text-sm text-slate-300">
+              <div class="flex items-center gap-3">
+                <div class="w-6 h-6 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-400 flex-shrink-0">
+                  <i data-lucide="check" class="w-4 h-4"></i>
+                </div>
+                <span><strong>Remote Optimized:</strong> 100% Leanback D-Pad navigation</span>
+              </div>
+              <div class="flex items-center gap-3">
+                <div class="w-6 h-6 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-400 flex-shrink-0">
+                  <i data-lucide="play-circle" class="w-4 h-4"></i>
+                </div>
+                <span><strong>Fast Episode Resume:</strong> Instant Continue Watching row</span>
+              </div>
+              <div class="flex items-center gap-3">
+                <div class="w-6 h-6 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-400 flex-shrink-0">
+                  <i data-lucide="monitor" class="w-4 h-4"></i>
+                </div>
+                <span><strong>Resolution:</strong> 4K Ultra HD & 1080p stream fallback</span>
+              </div>
+              <div class="flex items-center gap-3">
+                <div class="w-6 h-6 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-400 flex-shrink-0">
+                  <i data-lucide="zap" class="w-4 h-4"></i>
+                </div>
+                <span><strong>TV Banner & Launcher:</strong> Native Leanback TV Banner</span>
+              </div>
+            </div>
+
+            <!-- Downloader Code Terminal Pill -->
+            <div class="mb-6 p-3.5 rounded-xl bg-slate-950/90 border border-emerald-500/30 shadow-inner">
+              <div class="flex items-center justify-between text-xs text-slate-400 mb-1.5">
+                <span class="flex items-center gap-1.5 text-emerald-400 font-bold">
+                  <i data-lucide="terminal" class="w-3.5 h-3.5"></i>
+                  Firestick Downloader Code
+                </span>
+                <span class="text-[10px] text-slate-500 font-mono">Quick TV Sideload</span>
+              </div>
+              <div class="flex items-center justify-between bg-slate-900/80 px-3 py-2 rounded-lg border border-slate-800">
+                <div class="flex items-center gap-2">
+                  <span class="text-xs text-slate-500 font-mono">$</span>
+                  <span id="downloader-code" class="text-base font-mono font-extrabold text-emerald-300 tracking-wider">842910</span>
+                </div>
+                <button id="copy-btn" onclick="copyDownloaderCode()" class="flex items-center gap-1.5 px-3 py-1 rounded-md bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 text-xs font-semibold transition-all">
+                  <i id="copy-icon" data-lucide="copy" class="w-3.5 h-3.5"></i>
+                  <span id="copy-text">Copy Code</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Action CTA -->
+          <div class="pt-2 border-t border-slate-800/80">
+            <a href="./NexusTV.apk" download="NexusTV.apk" class="w-full flex items-center justify-center gap-3 px-6 py-4 rounded-xl font-extrabold text-sm text-slate-950 bg-gradient-to-r from-emerald-400 to-emerald-500 hover:from-emerald-300 hover:to-emerald-400 shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 transform active:scale-[0.99] transition-all">
+              <i data-lucide="download" class="w-5 h-5"></i>
+              <span>Download Nexus TV (Android TV APK)</span>
+            </a>
+            <p class="text-[11px] text-center text-slate-500 mt-2.5">Compatible with Sony, TCL, Philips, Nvidia Shield & Firestick</p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Feature Grid (3 Columns) -->
+    <section id="features" class="py-16 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto w-full">
+      <div class="text-center mb-12">
+        <span class="text-xs font-bold tracking-wider uppercase text-cyan-400 bg-cyan-500/10 px-3 py-1 rounded-full border border-cyan-500/20 font-mono">Architecture</span>
+        <h2 class="text-2xl sm:text-4xl font-extrabold text-white tracking-tight mt-3">Built Different. Built for Streamers.</h2>
+        <p class="text-sm sm:text-base text-slate-400 max-w-xl mx-auto mt-2">Every feature is designed to reduce latency, remove clutter, and let you immerse yourself in movies and series.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        
+        <!-- Feature 1 -->
+        <div class="glass-panel p-6 sm:p-7 rounded-2xl border border-slate-800 hover:border-cyan-500/40 transition-all duration-300 group">
+          <div class="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 mb-5 group-hover:scale-110 group-hover:bg-cyan-500/20 transition-all">
+            <i data-lucide="tv-2" class="w-6 h-6"></i>
+          </div>
+          <h3 class="text-lg font-bold text-white mb-2.5">Native Leanback Experience</h3>
+          <p class="text-sm text-slate-400 leading-relaxed">
+            Designed specifically for TV remotes and Firestick D-pads. Features high-visibility focus states, fluid carousel scrolling, and zero awkward pointer emulation.
+          </p>
+        </div>
+
+        <!-- Feature 2 -->
+        <div class="glass-panel p-6 sm:p-7 rounded-2xl border border-slate-800 hover:border-emerald-500/40 transition-all duration-300 group">
+          <div class="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 mb-5 group-hover:scale-110 group-hover:bg-emerald-500/20 transition-all">
+            <i data-lucide="history" class="w-6 h-6"></i>
+          </div>
+          <h3 class="text-lg font-bold text-white mb-2.5">Smart State Persistence</h3>
+          <p class="text-sm text-slate-400 leading-relaxed">
+            Instant continue watching rail with precise resume timestamps. Automatically recognizes completed episodes at the 90% threshold and updates checkmark badges.
+          </p>
+        </div>
+
+        <!-- Feature 3 -->
+        <div class="glass-panel p-6 sm:p-7 rounded-2xl border border-slate-800 hover:border-cyan-500/40 transition-all duration-300 group">
+          <div class="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 mb-5 group-hover:scale-110 group-hover:bg-cyan-500/20 transition-all">
+            <i data-lucide="film" class="w-6 h-6"></i>
+          </div>
+          <h3 class="text-lg font-bold text-white mb-2.5">Distraction-Free Playback</h3>
+          <p class="text-sm text-slate-400 leading-relaxed">
+            Zero intrusive toasts, popups, or screen clutter during viewing. Seamless multi-source fallback ensures playback resumes smoothly with zero mid-roll video interruptions.
+          </p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Installation Guide (Tabbed Interface) -->
+    <section id="install-guide" class="py-16 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto w-full">
+      <div class="text-center mb-10">
+        <span class="text-xs font-bold tracking-wider uppercase text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20 font-mono">Quickstart</span>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight mt-3">Simple Sideload Guide</h2>
+        <p class="text-sm text-slate-400 mt-2">Get up and running on your device in less than two minutes.</p>
+      </div>
+
+      <!-- Tab Switcher -->
+      <div class="flex justify-center mb-8">
+        <div class="inline-flex p-1 rounded-xl bg-slate-900 border border-slate-800">
+          <button id="tab-btn-mobile" onclick="switchTab('mobile')" class="flex items-center gap-2 px-5 py-2.5 rounded-lg text-xs sm:text-sm font-bold transition-all bg-cyan-500 text-slate-950 shadow-md">
+            <i data-lucide="smartphone" class="w-4 h-4"></i>
+            <span>Android Mobile / Tablet</span>
+          </button>
+          <button id="tab-btn-tv" onclick="switchTab('tv')" class="flex items-center gap-2 px-5 py-2.5 rounded-lg text-xs sm:text-sm font-bold transition-all text-slate-400 hover:text-white">
+            <i data-lucide="tv" class="w-4 h-4"></i>
+            <span>Fire TV / Android TV</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Tab Content: Mobile -->
+      <div id="tab-content-mobile" class="glass-panel rounded-2xl p-6 sm:p-8 border border-slate-800">
+        <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+          <i data-lucide="smartphone" class="w-5 h-5 text-cyan-400"></i>
+          Installing Nexus HD on Android Phone or Tablet
+        </h3>
+        <ol class="space-y-4 text-sm text-slate-300">
+          <li class="flex items-start gap-3.5">
+            <span class="flex items-center justify-center w-6 h-6 rounded-full bg-cyan-500/20 text-cyan-400 font-mono font-bold text-xs flex-shrink-0 mt-0.5">1</span>
+            <div>
+              <strong class="text-white">Download the APK:</strong> Tap the <a href="./NexusHD.apk" class="text-cyan-400 hover:underline font-semibold">Download Nexus HD</a> button above to download <code class="text-xs bg-slate-800 px-1 py-0.5 rounded text-cyan-300">NexusHD.apk</code> directly.
+            </div>
+          </li>
+          <li class="flex items-start gap-3.5">
+            <span class="flex items-center justify-center w-6 h-6 rounded-full bg-cyan-500/20 text-cyan-400 font-mono font-bold text-xs flex-shrink-0 mt-0.5">2</span>
+            <div>
+              <strong class="text-white">Enable Unknown Apps (if prompted):</strong> If Android displays "File might be harmful" or prompts for permissions, go to <em>Settings > Apps > Special app access > Install unknown apps</em> and allow your browser.
+            </div>
+          </li>
+          <li class="flex items-start gap-3.5">
+            <span class="flex items-center justify-center w-6 h-6 rounded-full bg-cyan-500/20 text-cyan-400 font-mono font-bold text-xs flex-shrink-0 mt-0.5">3</span>
+            <div>
+              <strong class="text-white">Complete Installation:</strong> Tap the completed download notification or open your Files app to install. Launch Nexus HD and enjoy instant streaming!
+            </div>
+          </li>
+        </ol>
+      </div>
+
+      <!-- Tab Content: TV -->
+      <div id="tab-content-tv" class="hidden glass-panel rounded-2xl p-6 sm:p-8 border border-slate-800">
+        <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+          <i data-lucide="tv" class="w-5 h-5 text-emerald-400"></i>
+          Installing Nexus TV via the Downloader App
+        </h3>
+        <ol class="space-y-4 text-sm text-slate-300">
+          <li class="flex items-start gap-3.5">
+            <span class="flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 font-mono font-bold text-xs flex-shrink-0 mt-0.5">1</span>
+            <div>
+              <strong class="text-white">Get Downloader:</strong> On your Firestick or Android TV, search for and install the free orange <strong class="text-emerald-300">Downloader</strong> app by AFTVnews.
+            </div>
+          </li>
+          <li class="flex items-start gap-3.5">
+            <span class="flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 font-mono font-bold text-xs flex-shrink-0 mt-0.5">2</span>
+            <div>
+              <strong class="text-white">Enable Developer Options:</strong> Navigate to <em>Settings > My Fire TV > Developer Options > Install unknown apps</em>, and toggle <strong>Downloader</strong> to <span class="text-emerald-400 font-semibold">ON</span>.
+            </div>
+          </li>
+          <li class="flex items-start gap-3.5">
+            <span class="flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 font-mono font-bold text-xs flex-shrink-0 mt-0.5">3</span>
+            <div>
+              <strong class="text-white">Enter Downloader Code:</strong> Open Downloader, enter numeric shortcode <strong class="text-emerald-400 font-mono bg-slate-900 px-2 py-0.5 rounded border border-slate-800">842910</strong> in the URL box, and select <strong>Go</strong>.
+            </div>
+          </li>
+          <li class="flex items-start gap-3.5">
+            <span class="flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 font-mono font-bold text-xs flex-shrink-0 mt-0.5">4</span>
+            <div>
+              <strong class="text-white">Install & Open:</strong> Once the download finishes, select <strong>Install</strong> on the screen prompt. You can now launch Nexus TV from your Apps row!
+            </div>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- Footer & Disclaimers -->
+    <footer class="mt-auto border-t border-slate-800/80 bg-slate-950/90 py-12 text-slate-400 text-xs">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+        
+        <!-- Top Row: Logo & Quick Navigation -->
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-6 pb-6 border-b border-slate-900">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-lg overflow-hidden border border-slate-700 bg-slate-900 p-0.5">
+              <img src="./assets/logo.png" alt="Nexus Brand" class="w-full h-full object-cover rounded-md">
+            </div>
+            <span class="font-extrabold text-white text-base tracking-wider">NEXUS ECOSYSTEM</span>
+          </div>
+
+          <div class="flex flex-wrap items-center justify-center gap-6 text-slate-400">
+            <a href="./NexusHD.apk" download class="hover:text-cyan-400 transition-colors">Nexus HD APK</a>
+            <a href="./NexusTV.apk" download class="hover:text-emerald-400 transition-colors">Nexus TV APK</a>
+            <a href="./privacy.html" class="hover:text-white transition-colors">Privacy Policy</a>
+            <a href="./app-ads.txt" class="hover:text-white transition-colors font-mono">app-ads.txt</a>
+          </div>
+        </div>
+
+        <!-- DMCA & Content Disclaimer -->
+        <div class="bg-slate-900/40 p-4 sm:p-5 rounded-xl border border-slate-800/80 text-[11px] leading-relaxed text-slate-400">
+          <div class="flex items-center gap-2 text-slate-300 font-bold mb-1.5">
+            <i data-lucide="alert-circle" class="w-4 h-4 text-cyan-400"></i>
+            <span>DMCA & Content Disclaimer</span>
+          </div>
+          <p>
+            Nexus HD and Nexus TV strictly index publicly available catalog stream references and metadata distributed by third-party web servers across the Internet. 
+            The applications and platform host, upload, or transmit no media files directly. Nexus does not have control over external streaming endpoints. For DMCA notices or copyright inquiries regarding external hosts, please contact the respective third-party providers.
+          </p>
+        </div>
+
+        <!-- Copyright & System Status -->
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 text-slate-500 text-[11px]">
+          <p>© 2026 Nexus Streaming Ecosystem. All rights reserved.</p>
+          <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+            <span>All Catalog Indexers Operational</span>
+          </div>
+        </div>
+
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- Toast Notification for Downloader Code Copy -->
+  <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
+    <div class="flex items-center gap-3 px-4 py-3 rounded-xl bg-slate-900 border border-emerald-500/50 shadow-2xl text-white text-xs">
+      <div class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center flex-shrink-0">
+        <i data-lucide="check" class="w-4 h-4"></i>
+      </div>
+      <div>
+        <div class="font-bold text-emerald-300">Code Copied to Clipboard!</div>
+        <div class="text-slate-400 text-[11px]">Enter 842910 in your Fire TV Downloader app.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Interactive Scripts -->
+  <script>
+    // Initialize Lucide Icons
+    lucide.createIcons();
+
+    // Tab Switching Functionality
+    function switchTab(tab) {
+      const btnMobile = document.getElementById('tab-btn-mobile');
+      const btnTv = document.getElementById('tab-btn-tv');
+      const contentMobile = document.getElementById('tab-content-mobile');
+      const contentTv = document.getElementById('tab-content-tv');
+
+      if (tab === 'mobile') {
+        btnMobile.className = 'flex items-center gap-2 px-5 py-2.5 rounded-lg text-xs sm:text-sm font-bold transition-all bg-cyan-500 text-slate-950 shadow-md';
+        btnTv.className = 'flex items-center gap-2 px-5 py-2.5 rounded-lg text-xs sm:text-sm font-bold transition-all text-slate-400 hover:text-white';
+        contentMobile.classList.remove('hidden');
+        contentTv.classList.add('hidden');
+      } else {
+        btnTv.className = 'flex items-center gap-2 px-5 py-2.5 rounded-lg text-xs sm:text-sm font-bold transition-all bg-emerald-500 text-slate-950 shadow-md';
+        btnMobile.className = 'flex items-center gap-2 px-5 py-2.5 rounded-lg text-xs sm:text-sm font-bold transition-all text-slate-400 hover:text-white';
+        contentTv.classList.remove('hidden');
+        contentMobile.classList.add('hidden');
+      }
+      lucide.createIcons();
+    }
+
+    // Downloader Code Copy Functionality
+    function copyDownloaderCode() {
+      const code = document.getElementById('downloader-code').innerText.trim();
+      
+      const copyToClipboard = () => {
+        if (navigator.clipboard && window.isSecureContext) {
+          return navigator.clipboard.writeText(code);
+        } else {
+          const textarea = document.createElement('textarea');
+          textarea.value = code;
+          textarea.style.position = 'fixed';
+          textarea.style.left = '-9999px';
+          document.body.appendChild(textarea);
+          textarea.focus();
+          textarea.select();
+          try {
+            document.execCommand('copy');
+          } catch (err) {
+            console.error('Fallback copy failed', err);
+          }
+          document.body.removeChild(textarea);
+          return Promise.resolve();
+        }
+      };
+
+      copyToClipboard().then(() => {
+        // Update button visual state
+        const copyText = document.getElementById('copy-text');
+        const copyBtn = document.getElementById('copy-btn');
+        copyText.innerText = 'Copied!';
+        copyBtn.classList.remove('bg-emerald-500/20', 'text-emerald-300');
+        copyBtn.classList.add('bg-emerald-500', 'text-slate-950');
+
+        // Show Toast Notification
+        const toast = document.getElementById('toast');
+        toast.classList.remove('translate-y-20', 'opacity-0');
+        toast.classList.add('translate-y-0', 'opacity-100');
+
+        setTimeout(() => {
+          copyText.innerText = 'Copy Code';
+          copyBtn.classList.add('bg-emerald-500/20', 'text-emerald-300');
+          copyBtn.classList.remove('bg-emerald-500', 'text-slate-950');
+          
+          toast.classList.remove('translate-y-0', 'opacity-100');
+          toast.classList.add('translate-y-20', 'opacity-0');
+        }, 3000);
+      });
+    }
+  </script>
+</body>
+</html>
