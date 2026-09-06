@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Nexus TV — Modern Streaming</title>
+  <meta name="description" content="Watch high-definition movies and series with instant streaming.">
+  <meta name="theme-color" content="#030712">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="app-body">
+
+
+  <!-- TV Mode Collapsible Sidebar for Remote Controllers -->
+  <aside class="tv-sidebar" id="tv-sidebar">
+    <div class="tv-sidebar-brand" tabindex="-1">
+      <img src="nexus_logo.png" alt="Nexus TV" class="tv-brand-icon">
+      <span class="tv-brand-name">NEXUS<span>TV</span></span>
+    </div>
+    <nav class="tv-sidebar-nav">
+      <div class="tv-sidebar-item" data-tab="view-search" tabindex="0" title="Search">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <span class="tv-item-label">Search</span>
+      </div>
+      <div class="tv-sidebar-item active" data-tab="view-home" tabindex="0" title="Home">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+        </svg>
+        <span class="tv-item-label">Home</span>
+      </div>
+      <div class="tv-sidebar-item" data-tab="view-series" tabindex="0" title="Series">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="7" width="20" height="15" rx="2" ry="2"></rect>
+          <polyline points="17 2 12 7 7 2"></polyline>
+        </svg>
+        <span class="tv-item-label">Series</span>
+      </div>
+      <div class="tv-sidebar-item" data-tab="view-movies" tabindex="0" title="Movies">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect>
+          <line x1="7" y1="2" x2="7" y2="22"></line>
+          <line x1="17" y1="2" x2="17" y2="22"></line>
+          <line x1="2" y1="12" x2="22" y2="12"></line>
+          <line x1="2" y1="7" x2="7" y2="7"></line>
+          <line x1="2" y1="17" x2="7" y2="17"></line>
+          <line x1="17" y1="17" x2="22" y2="17"></line>
+          <line x1="17" y1="7" x2="22" y2="7"></line>
+        </svg>
+        <span class="tv-item-label">Movies</span>
+      </div>
+      <div class="tv-sidebar-item" data-tab="view-watchlist" tabindex="0" title="Watchlist">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+        </svg>
+        <span class="tv-item-label">Watchlist</span>
+      </div>
+    </nav>
+  </aside>
+
+  <!-- App Top Bar (Native Android Header) -->
+  <header class="app-header">
+    <div class="header-content">
+      <div class="brand-wrap">
+        <img src="nexus_logo.png" alt="Nexus TV Logo" class="brand-logo-img">
+        <span class="brand-title">NEXUS<span>TV</span></span>
+      </div>
+      <div class="header-actions">
+        <!-- Check for Updates button -->
+        <button class="update-check-btn" id="check-update-btn" title="Check for Updates">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+          </svg>
+          <span class="update-btn-label">Update</span>
+        </button>
+        <!-- Standalone Mode badge -->
+        <button class="server-badge" id="server-settings-btn" title="Standalone Mode">
+          <span class="status-dot"></span>
+          <span class="status-label">Online</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ========================================================================
+       App Main Body & Tab Views (Single-Page App)
+       ======================================================================== -->
+  <main class="app-main">
+    <!-- VIEW 1: HOME TAB -->
+    <div class="view-panel active" id="view-home">
+      <!-- Dynamic Featured Cinematic Showcase -->
+      <section class="hero-showcase">
+        <div class="hero-card" id="hero-card">
+          <div class="hero-bg" id="hero-bg"></div>
+          <div class="hero-overlay-gradient"></div>
+          <div class="hero-content" id="hero-content">
+            <span class="hero-pill" id="hero-type-badge">TRENDING NOW</span>
+            <h1 class="hero-name" id="hero-title"></h1>
+            <div class="hero-meta-row">
+              <span class="meta-rating" id="hero-rating"></span>
+              <span class="meta-year" id="hero-year"></span>
+              <span class="meta-quality" id="hero-quality" style="display: none;">4K ULTRA HD</span>
+            </div>
+            <p class="hero-summary" id="hero-desc"></p>
+            <div class="hero-buttons-row">
+              <button class="app-btn btn-play" id="hero-play-btn">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                  <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                </svg>
+                <span>Watch Now</span>
+              </button>
+              <button class="app-btn btn-details" id="hero-info-btn">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="12" y1="16" x2="12" y2="12"></line>
+                  <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                </svg>
+                <span>Episodes</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Continue Watching Rail (Auto-Saved Resume Points) -->
+      <section class="rail-section continue-watching-section" id="continue-watching-section" style="display: none;"></section>
+
+      <!-- Horizontal Movie/Series Rails -->
+      <div class="rails-container" id="rails-container">
+        <div class="app-loader" id="home-loader">
+          <div class="pulse-spinner"></div>
+          <p>Connecting to streaming cluster...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- VIEW 2: SEARCH TAB -->
+    <div class="view-panel" id="view-search">
+      <div class="search-view-container">
+        <!-- Sleek Unified Cinema Search Bar -->
+        <div class="search-input-card">
+          <svg class="search-input-icon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input type="text" id="main-search-input" placeholder="Search movies, anime, drama..." autocomplete="off">
+          <button class="search-input-clear" id="main-search-clear" title="Clear">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+        </div>
+
+        <!-- Quick filter chips -->
+        <div class="filter-chips-row">
+          <button class="chip active" data-filter="all">All</button>
+          <button class="chip" data-filter="Action">Action</button>
+          <button class="chip" data-filter="Drama">Drama</button>
+          <button class="chip" data-filter="Anime">Anime</button>
+          <button class="chip" data-filter="Sci-Fi">Sci-Fi</button>
+          <button class="chip" data-filter="Comedy">Comedy</button>
+        </div>
+
+        <!-- Search Results Grid -->
+        <div class="search-results-grid" id="search-grid">
+          <div class="search-empty-state">
+            <div class="empty-icon-svg">
+              <svg viewBox="0 0 24 24" width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+            </div>
+            <h3 class="empty-title">Discover Movies & Series</h3>
+            <p class="empty-desc">Type any title, genre, or click a category above to explore.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VIEW 3: SERIES TAB -->
+    <div class="view-panel" id="view-series">
+      <div class="category-view-container">
+        <h2 class="view-heading">TV Shows & Series</h2>
+        <div class="category-grid" id="series-grid">
+          <div class="app-loader"><div class="pulse-spinner"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VIEW 4: MOVIES TAB -->
+    <div class="view-panel" id="view-movies">
+      <div class="category-view-container">
+        <h2 class="view-heading">Feature Movies</h2>
+        <div class="category-grid" id="movies-grid">
+          <div class="app-loader"><div class="pulse-spinner"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VIEW 5: WATCHLIST TAB -->
+    <div class="view-panel" id="view-watchlist">
+      <div class="category-view-container">
+        <div class="watchlist-header-bar">
+          <div class="watchlist-title-wrap">
+            <h2 class="view-heading">My Watchlist</h2>
+            <span class="watchlist-count-badge" id="watchlist-count-badge">0 Titles</span>
+          </div>
+          <div class="watchlist-filter-chips" id="watchlist-filter-chips">
+            <button class="watchlist-chip active" data-filter="all">All</button>
+            <button class="watchlist-chip" data-filter="movies">Movies</button>
+            <button class="watchlist-chip" data-filter="series">Series</button>
+          </div>
+        </div>
+        <div class="category-grid" id="watchlist-grid"></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Title Detail & Episode Bottom Sheet / Modal -->
+  <div class="sheet-backdrop" id="detail-sheet">
+    <div class="sheet-container">
+      <div class="sheet-drag-handle"></div>
+
+      <div class="sheet-scroll-area">
+        <!-- Modern Cinematic Header Backdrop -->
+        <div class="sheet-backdrop-banner" id="sheet-hero">
+          <div class="sheet-hero-gradient"></div>
+          <button class="sheet-close-floating-btn" id="sheet-close-btn" title="Close">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+          
+          <div class="sheet-banner-content">
+            <div class="sheet-badge-type" id="sheet-type-badge">MOVIE</div>
+            <h2 class="sheet-main-title" id="sheet-title">Title</h2>
+          </div>
+        </div>
+
+        <!-- Meta Tags & Info Bar -->
+        <div class="sheet-meta-bar">
+          <span class="meta-tag rating-tag" id="sheet-score">★ 8.8</span>
+          <span class="meta-tag year-tag" id="sheet-year">2026</span>
+          <span class="meta-tag duration-tag" id="sheet-duration">124 min</span>
+          <span class="meta-tag hd-tag">4K ULTRA HD</span>
+        </div>
+
+        <div class="sheet-genre-pills" id="sheet-genres"></div>
+
+        <!-- Action Buttons Row -->
+        <div class="sheet-actions">
+          <button class="app-btn btn-play" id="sheet-play-btn">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+              <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            </svg>
+            <span id="sheet-play-text">Start Streaming Movie</span>
+          </button>
+          <button class="app-btn btn-watchlist" id="sheet-watchlist-btn" title="Add to Watchlist">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="watchlist-icon-svg">
+              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+            </svg>
+            <span id="sheet-watchlist-text">My List</span>
+          </button>
+        </div>
+
+        <!-- Synopsis -->
+        <div class="sheet-section">
+          <h3 class="section-label">Storyline</h3>
+          <p class="synopsis-text" id="sheet-synopsis">Loading overview...</p>
+        </div>
+
+        <!-- SERIES SEASONS & EPISODES SECTION -->
+        <div class="sheet-section" id="series-episodes-section" style="display: none;">
+          <h3 class="section-label">Episodes</h3>
+          
+          <!-- Season selection tabs -->
+          <div class="season-tabs-scroll" id="season-tabs-container"></div>
+
+          <!-- Episode cards list -->
+          <div class="episodes-cards-list" id="episodes-list"></div>
+        </div>
+
+        <!-- Cast & Characters -->
+        <div class="sheet-section" id="sheet-cast-section" style="display: none;">
+          <h3 class="section-label">Top Cast</h3>
+          <div class="cast-cards-row" id="sheet-cast-row"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Advanced Cinema Video Player Overlay -->
+  <div class="player-overlay" id="player-overlay">
+    <!-- Top HUD Bar -->
+    <div class="player-hud-top" id="player-hud-top">
+      <button class="player-hud-btn" id="player-back-btn" title="Back">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+      </button>
+      <div class="player-title-box">
+        <div class="player-movie-name" id="player-title-text">Title</div>
+        <div class="player-stream-tag" id="player-tag-text">Direct CDN • 1080p</div>
+      </div>
+      <div class="player-top-tools">
+        <!-- Aspect ratio / Fill toggle -->
+        <button class="player-tool-pill" id="player-fit-btn" title="Toggle Aspect Ratio (Fit / Zoom)">Fit</button>
+        <!-- Speed selector -->
+        <select id="player-speed-picker" class="quality-dropdown" title="Speed">
+          <option value="0.75">0.75x</option>
+          <option value="1" selected>1.0x</option>
+          <option value="1.25">1.25x</option>
+          <option value="1.5">1.5x</option>
+          <option value="2">2.0x</option>
+        </select>
+        <!-- Subtitles selector -->
+        <select id="player-subtitle-picker" class="quality-dropdown" title="Subtitles">
+          <option value="off">Subs: Off</option>
+        </select>
+        <!-- Quality selector -->
+        <select id="player-quality-picker" class="quality-dropdown" title="Stream Quality"></select>
+      </div>
+    </div>
+
+    <!-- Media Wrap with Video & Subtitles Overlay -->
+    <div class="player-media-wrap" id="player-media-wrap">
+      <!-- Loading Spinner -->
+      <div class="player-spinner" id="player-spinner">
+        <div class="pulse-spinner"></div>
+        <span id="player-loading-msg">Connecting to Hakuna CDN...</span>
+      </div>
+
+      <!-- Unavailable Stream Notice Card -->
+      <div class="player-notice" id="player-notice" style="display: none;">
+        <div class="notice-icon-svg">
+          <svg viewBox="0 0 24 24" width="38" height="38" fill="none" stroke="#FF3366" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+        </div>
+        <h3 class="notice-title">Stream Notice</h3>
+        <p class="notice-desc" id="player-notice-msg">No active video stream available for this title.</p>
+        <button class="app-btn btn-play" id="player-notice-close">Return to Catalog</button>
+      </div>
+
+      <!-- Video Element with Hardware Acceleration -->
+      <video id="native-video" playsinline preload="auto" crossorigin="anonymous"></video>
+
+      <!-- Guaranteed Synchronized Cinema Subtitles Overlay -->
+      <div class="cinema-subtitles-container" id="cinema-subtitles-container">
+        <span class="cinema-subtitle-cue" id="cinema-subtitles-text"></span>
+      </div>
+
+      <!-- Double Tap Left (-10s) Indicator -->
+      <div class="double-tap-indicator left" id="dt-left">
+        <div class="dt-circle">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><polygon points="11 19 2 12 11 5 11 19"></polygon><polygon points="22 19 13 12 22 5 22 19"></polygon></svg>
+          <span>10s</span>
+        </div>
+      </div>
+      <!-- Double Tap Right (+10s) Indicator -->
+      <div class="double-tap-indicator right" id="dt-right">
+        <div class="dt-circle">
+          <span>10s</span>
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><polygon points="13 19 22 12 13 5 13 19"></polygon><polygon points="2 19 11 12 2 5 2 19"></polygon></svg>
+        </div>
+      </div>
+
+      <!-- Center Touch Controller (Play/Pause, Rewind, Fast Forward) -->
+      <div class="player-center-controls" id="player-center-controls">
+        <button class="ctrl-btn seek-btn" id="ctrl-seek-back" title="Rewind 10s">
+          <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M11 17l-5-5 5-5M18 17l-5-5 5-5"/>
+          </svg>
+          <span>10</span>
+        </button>
+
+        <button class="ctrl-btn play-pause-btn" id="ctrl-play-pause" title="Play/Pause">
+          <svg id="ctrl-play-icon" viewBox="0 0 24 24" width="34" height="34" fill="currentColor">
+            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+          </svg>
+          <svg id="ctrl-pause-icon" viewBox="0 0 24 24" width="34" height="34" fill="currentColor" style="display: none;">
+            <rect x="6" y="4" width="4" height="16"></rect>
+            <rect x="14" y="4" width="4" height="16"></rect>
+          </svg>
+        </button>
+
+        <button class="ctrl-btn seek-btn" id="ctrl-seek-forward" title="Forward 10s">
+          <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M13 17l5-5-5-5M6 17l5-5-5-5"/>
+          </svg>
+          <span>10</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Bottom HUD Bar: Scrubber, Timestamps & Screen Lock -->
+    <div class="player-hud-bottom" id="player-hud-bottom">
+      <span class="hud-time" id="player-current-time">00:00</span>
+      <div class="hud-progress-wrap" id="player-progress-wrap">
+        <input type="range" class="hud-progress-bar" id="player-progress-bar" min="0" max="100" value="0" step="0.1">
+      </div>
+      <span class="hud-time" id="player-total-duration">00:00</span>
+      <button class="player-hud-btn icon-btn" id="player-rotate-btn" title="Rotate to Fullscreen">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+        </svg>
+      </button>
+    </div>
+  <!-- ========================================================================
+       In-App Update Modal
+       ======================================================================== -->
+  <div class="update-modal-overlay" id="update-modal" style="display: none;">
+    <div class="update-modal-card">
+      <div class="update-badge-row">
+        <img src="nexus_logo.png" alt="Nexus TV" class="update-logo">
+        <span class="update-pill" id="update-version-pill">v1.1.0 AVAILABLE</span>
+      </div>
+      <h2 class="update-title">New Update Ready</h2>
+      <p class="update-subtitle" id="update-summary-text">A newer, faster version of Nexus TV is ready to install.</p>
+      
+      <div class="update-notes-box">
+        <div class="update-notes-heading">What's New:</div>
+        <ul class="update-notes-list" id="update-notes-list"></ul>
+      </div>
+
+      <div class="update-progress-container" id="update-progress-wrap" style="display: none;">
+        <div class="update-progress-info">
+          <span id="update-status-text">Downloading update...</span>
+          <span id="update-percent-text">0%</span>
+        </div>
+        <div class="update-progress-track">
+          <div class="update-progress-fill" id="update-progress-fill" style="width: 0%;"></div>
+        </div>
+      </div>
+
+      <div class="update-actions-row">
+        <button class="app-btn update-btn-later" id="update-later-btn">Later</button>
+        <button class="app-btn update-btn-now" id="update-now-btn">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right: 6px;">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          Update Now
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      var ts = Date.now();
+      var s1 = document.createElement('script');
+      s1.src = 'app.js?v=' + ts;
+      document.body.appendChild(s1);
+      var s2 = document.createElement('script');
+      s2.src = 'spatial-nav.js?v=' + ts;
+      document.body.appendChild(s2);
+    })();
+  </script>
+</body>
+</html>
