@@ -6,7 +6,7 @@ from typing import Optional
 from urllib.parse import quote, unquote
 from fastapi import FastAPI, HTTPException, Query, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, StreamingResponse
+from fastapi.responses import FileResponse, StreamingResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 import httpx
 import uvicorn
@@ -418,7 +418,7 @@ def get_play(
 
 @app.get("/api/proxy-stream")
 async def proxy_stream(request: Request, url: Optional[str] = None):
-    """Proxies Hakuna CDN MP4 streams with Range header support and proper Referer bypass."""
+    """Proxies Hakuna CDN MP4 streams over HTTP/2 with Range header support and proper Referer bypass."""
     raw_query = str(request.query_params)
     target_url = ""
 
@@ -431,25 +431,47 @@ async def proxy_stream(request: Request, url: Optional[str] = None):
     if not target_url.startswith("http"):
         raise HTTPException(status_code=400, detail="Invalid stream URL")
 
+    # Force HTTPS to prevent CDN HTTP 426 / 403 blocks
+    if target_url.startswith("http://"):
+        target_url = "https://" + target_url[7:]
+
     req_headers = {
         "User-Agent": (
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
             "AppleWebKit/537.36 (KHTML, like Gecko) "
             "Chrome/124.0.0.0 Safari/537.36"
         ),
+        "Accept": "*/*",
+        "Accept-Language": "en-US,en;q=0.9",
         "Referer": "https://movie-box.co/",
         "Origin": "https://movie-box.co",
+        "Sec-Ch-Ua": '"Chromium";v="124", "Google Chrome";v="124", "Not-A.Brand";v="99"',
+        "Sec-Ch-Ua-Mobile": "?0",
+        "Sec-Ch-Ua-Platform": '"Windows"',
+        "Sec-Fetch-Dest": "video",
+        "Sec-Fetch-Mode": "cors",
+        "Sec-Fetch-Site": "cross-site",
     }
 
     range_header = request.headers.get("range")
     if range_header:
         req_headers["Range"] = range_header
 
-    client_http = httpx.AsyncClient(timeout=60.0, follow_redirects=True)
+    client_http = httpx.AsyncClient(http2=True, timeout=60.0, follow_redirects=True)
 
     try:
         req = client_http.build_request("GET", target_url, headers=req_headers)
         response = await client_http.send(req, stream=True)
+
+        if response.status_code >= 400:
+            err_body = await response.aread()
+            await response.aclose()
+            await client_http.aclose()
+            logger.error(f"Upstream CDN error HTTP {response.status_code}: {err_body[:200]}")
+            raise HTTPException(
+                status_code=response.status_code,
+                detail=f"CDN stream unavailable (HTTP {response.status_code})"
+            )
 
         resp_headers = {
             "Accept-Ranges": "bytes",
@@ -475,6 +497,8 @@ async def proxy_stream(request: Request, url: Optional[str] = None):
             status_code=response.status_code,
             headers=resp_headers,
         )
+    except HTTPException:
+        raise
     except Exception as e:
         await client_http.aclose()
         logger.error(f"Streaming proxy exception: {e}")
@@ -499,12 +523,16 @@ async def proxy_subtitle(request: Request, url: Optional[str] = None):
     if not target_url.startswith("http"):
         raise HTTPException(status_code=400, detail="Invalid subtitle URL")
 
+    if target_url.startswith("http://"):
+        target_url = "https://" + target_url[7:]
+
     req_headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+        "Accept": "*/*",
         "Referer": "https://movie-box.co/",
     }
 
-    async with httpx.AsyncClient(timeout=15.0, follow_redirects=True) as http_c:
+    async with httpx.AsyncClient(http2=True, timeout=15.0, follow_redirects=True) as http_c:
         try:
             res = await http_c.get(target_url, headers=req_headers)
             if res.status_code != 200:
@@ -584,6 +612,50 @@ def get_version():
         "fileSize": "6.44 MB",
         "forceUpdate": False,
     }
+
+
+@app.get("/version.json")
+@app.get("/static/version.json")
+def get_version_json():
+    # Load version.json from web-landing or parent directory
+    for path in ["version.json", "../version.json", "web-landing/version.json"]:
+        if os.path.exists(path):
+            try:
+                with open(path, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+                    return JSONResponse(
+                        content=data,
+                        headers={
+                            "Cache-Control": "no-cache, no-store, must-revalidate, max-age=0",
+                            "Pragma": "no-cache",
+                            "Access-Control-Allow-Origin": "*",
+                        },
+                    )
+            except Exception:
+                pass
+    return JSONResponse(
+        content={
+            "nexus_hd": {
+                "version_code": 2,
+                "version_name": "1.2.1",
+                "apk_url": "https://nexushd.site/NexusHD.apk",
+                "changelog": "Resolved CDN HTTP 426 playback error with HTTP/2 stream engine upgrade.",
+                "force": True,
+            },
+            "nexus_tv": {
+                "version_code": 2,
+                "version_name": "1.2.1",
+                "apk_url": "https://nexushd.site/NexusTV.apk",
+                "changelog": "Resolved CDN HTTP 426 playback error with HTTP/2 stream engine upgrade.",
+                "force": True,
+            },
+        },
+        headers={
+            "Cache-Control": "no-cache, no-store, must-revalidate, max-age=0",
+            "Pragma": "no-cache",
+            "Access-Control-Allow-Origin": "*",
+        },
+    )
 
 
 @app.head("/download")

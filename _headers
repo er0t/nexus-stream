@@ -6,9 +6,11 @@
 /*.apk
   Content-Type: application/vnd.android.package-archive
   Content-Disposition: attachment
-  Cache-Control: public, max-age=86400
+  Cache-Control: no-cache, no-store, must-revalidate, max-age=0
+  Pragma: no-cache
 
 /version.json
   Content-Type: application/json; charset=utf-8
   Access-Control-Allow-Origin: *
-  Cache-Control: no-cache, no-store, must-revalidate
+  Cache-Control: no-cache, no-store, must-revalidate, max-age=0
+  Pragma: no-cache

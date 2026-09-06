@@ -3,7 +3,7 @@ import json
 import logging
 import time
 from typing import Any, Dict, List, Optional
-import requests
+import httpx
 
 logger = logging.getLogger("CineVerseClient")
 
@@ -11,7 +11,7 @@ logger = logging.getLogger("CineVerseClient")
 class MovieBoxClient:
     """Client for the AOneRoom / MovieBox H5 BFF service.
     Implements dynamic guest session token bootstrapping, catalog search,
-    detail extraction, and stream manifest resolution.
+    detail extraction, and stream manifest resolution using HTTP/2 handshakes.
     """
 
     BASE_URL = "https://h5-api.aoneroom.com/wefeed-h5api-bff"
@@ -19,7 +19,7 @@ class MovieBoxClient:
 
     def __init__(self, timeout: int = 15):
         self.timeout = timeout
-        self.session = requests.Session()
+        self.session = httpx.Client(http2=True, timeout=timeout, follow_redirects=True)
         self._token: Optional[str] = None
         self._user_id: Optional[str] = None
         self._token_time: float = 0
@@ -33,7 +33,8 @@ class MovieBoxClient:
 
     def _base_headers(self, referer: Optional[str] = None) -> Dict[str, str]:
         return {
-            "Accept": "application/json",
+            "Accept": "application/json, text/plain, */*",
+            "Accept-Language": "en-US,en;q=0.9",
             "Origin": self.REFERER_BASE,
             "Referer": referer or f"{self.REFERER_BASE}/",
             "User-Agent": (
@@ -41,6 +42,12 @@ class MovieBoxClient:
                 "AppleWebKit/537.36 (KHTML, like Gecko) "
                 "Chrome/124.0.0.0 Safari/537.36"
             ),
+            "Sec-Ch-Ua": '"Chromium";v="124", "Google Chrome";v="124", "Not-A.Brand";v="99"',
+            "Sec-Ch-Ua-Mobile": "?0",
+            "Sec-Ch-Ua-Platform": '"Windows"',
+            "Sec-Fetch-Dest": "empty",
+            "Sec-Fetch-Mode": "cors",
+            "Sec-Fetch-Site": "cross-site",
             "X-Client-Info": json.dumps({"timezone": "UTC"}),
             "X-Client-Token": self._get_client_token(),
             "X-Family-Mode": "0",
@@ -49,11 +56,10 @@ class MovieBoxClient:
 
     def bootstrap(self, force: bool = False) -> str:
         """Handshake with /home to obtain a valid session JWT token."""
-        # 45 minute cached validity
         if self._token and not force and (time.time() - self._token_time < 2700):
             return self._token
 
-        logger.info("Handshaking with H5 BFF to obtain guest session token...")
+        logger.info("Handshaking with H5 BFF over HTTP/2 to obtain guest session token...")
         self.session.cookies.clear()
         res = self.session.get(
             f"{self.BASE_URL}/home",
@@ -80,7 +86,7 @@ class MovieBoxClient:
         params: Optional[Dict[str, Any]] = None,
         json_data: Optional[Dict[str, Any]] = None,
         referer: Optional[str] = None,
-    ) -> requests.Response:
+    ) -> httpx.Response:
         """Executes an authenticated request with auto-retry on 401/403."""
         for attempt in range(2):
             token = self.bootstrap(force=(attempt > 0))
