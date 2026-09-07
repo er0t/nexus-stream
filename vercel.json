@@ -1,18 +1,5 @@
 {
   "cleanUrls": true,
-  "redirects": [
-    {
-      "source": "/(.*)",
-      "has": [
-        {
-          "type": "host",
-          "value": "www.nexushd.site"
-        }
-      ],
-      "destination": "https://nexushd.site/$1",
-      "permanent": true
-    }
-  ],
   "headers": [
     {
       "source": "/app-ads.txt",
