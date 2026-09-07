@@ -1,16 +1,16 @@
 {
   "nexus_hd": {
-    "version_code": 1,
-    "version_name": "1.2.0",
+    "version_code": 3,
+    "version_name": "1.2.2",
     "apk_url": "https://nexushd.site/NexusHD.apk",
-    "changelog": "Critical backend cloud migration and playback stability updates.",
+    "changelog": "Resolved CDN stream unavailable error with native Conscrypt TLS engine.",
     "force": true
   },
   "nexus_tv": {
-    "version_code": 1,
-    "version_name": "1.2.0",
+    "version_code": 3,
+    "version_name": "1.2.2",
     "apk_url": "https://nexushd.site/NexusTV.apk",
-    "changelog": "Cloud backend synchronization and Leanback player improvements.",
+    "changelog": "Resolved CDN stream unavailable error with native Conscrypt TLS engine.",
     "force": true
   }
 }

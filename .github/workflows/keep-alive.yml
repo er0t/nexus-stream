@@ -1,0 +1,19 @@
+name: Render Backend Keep-Alive
+
+on:
+  schedule:
+    # Run every 10 minutes
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+
+jobs:
+  ping:
+    name: Ping Render Health Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping /health endpoint
+        run: |
+          echo "Pinging Render backend health check at $(date -u)..."
+          RESPONSE=$(curl -sSf --max-time 60 -w "\nHTTP_STATUS: %{http_code}\nTIME: %{time_total}s\n" https://nexus-backend-71wf.onrender.com/health)
+          echo "$RESPONSE"
+          echo "Render backend is awake and healthy."

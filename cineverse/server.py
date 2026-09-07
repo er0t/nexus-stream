@@ -586,6 +586,11 @@ def get_logo():
     return FileResponse(os.path.join(STATIC_DIR, "nexus_logo.png"))
 
 
+@app.get("/health")
+def health_check():
+    return {"status": "ok"}
+
+
 @app.get("/api/ad-config")
 def get_ad_config():
     return {
@@ -618,7 +623,7 @@ def get_version():
 @app.get("/static/version.json")
 def get_version_json():
     # Load version.json from web-landing or parent directory
-    for path in ["version.json", "../version.json", "web-landing/version.json"]:
+    for path in ["version.json", "../version.json", "web-landing/version.json", "cineverse/static/version.json", "static/version.json"]:
         if os.path.exists(path):
             try:
                 with open(path, "r", encoding="utf-8") as f:
@@ -636,17 +641,17 @@ def get_version_json():
     return JSONResponse(
         content={
             "nexus_hd": {
-                "version_code": 2,
-                "version_name": "1.2.1",
+                "version_code": 3,
+                "version_name": "1.2.2",
                 "apk_url": "https://nexushd.site/NexusHD.apk",
-                "changelog": "Resolved CDN HTTP 426 playback error with HTTP/2 stream engine upgrade.",
+                "changelog": "Resolved CDN playback errors with native Conscrypt TLS engine.",
                 "force": True,
             },
             "nexus_tv": {
-                "version_code": 2,
-                "version_name": "1.2.1",
+                "version_code": 3,
+                "version_name": "1.2.2",
                 "apk_url": "https://nexushd.site/NexusTV.apk",
-                "changelog": "Resolved CDN HTTP 426 playback error with HTTP/2 stream engine upgrade.",
+                "changelog": "Resolved CDN playback errors with native Conscrypt TLS engine.",
                 "force": True,
             },
         },
