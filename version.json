@@ -7,10 +7,10 @@
     "force": true
   },
   "nexus_tv": {
-    "version_code": 5,
-    "version_name": "1.2.4",
+    "version_code": 6,
+    "version_name": "1.2.5",
     "apk_url": "https://nexushd.site/NexusTV.apk",
-    "changelog": "Fixed Android 12 search crash and resolved D-pad control focus navigation.",
+    "changelog": "Added TV series indexing to search engine with Series badging.",
     "force": true
   }
 }
