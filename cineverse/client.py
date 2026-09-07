@@ -19,7 +19,12 @@ class MovieBoxClient:
 
     def __init__(self, timeout: int = 15):
         self.timeout = timeout
-        self.session = httpx.Client(http2=True, timeout=timeout, follow_redirects=True)
+        self.session = httpx.Client(
+            http2=True,
+            timeout=timeout,
+            follow_redirects=True,
+            limits=httpx.Limits(max_keepalive_connections=20, max_connections=50, keepalive_expiry=5.0),
+        )
         self._token: Optional[str] = None
         self._user_id: Optional[str] = None
         self._token_time: float = 0

@@ -3,7 +3,7 @@ services:
     name: nexus-stream-backend
     runtime: python
     buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn server:app --host 0.0.0.0 --port $PORT
+    startCommand: uvicorn server:app --host 0.0.0.0 --port $PORT --workers 1 --timeout-keep-alive 5 --limit-concurrency 100
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.8

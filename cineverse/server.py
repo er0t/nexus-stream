@@ -1,3 +1,4 @@
+import gc
 import json
 import logging
 import os
@@ -6,10 +7,13 @@ from typing import Optional
 from urllib.parse import quote, unquote
 from fastapi import FastAPI, HTTPException, Query, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, StreamingResponse, JSONResponse
+from fastapi.responses import FileResponse, RedirectResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 import httpx
 import uvicorn
+
+# Tune Python garbage collector to collect aggressively on 512MB Render container
+gc.set_threshold(400, 10, 10)
 
 from client import MovieBoxClient
 
@@ -25,6 +29,18 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.middleware("http")
+async def connection_cleanup_middleware(request: Request, call_next):
+    """Guards against orphaned socket connections and cleans up on client abort."""
+    try:
+        response = await call_next(request)
+        return response
+    except Exception as e:
+        if "disconnect" in str(e).lower() or "cancel" in str(e).lower():
+            logger.info(f"Client disconnected early from {request.url.path}")
+            return Response(status_code=499)
+        raise e
 
 client = MovieBoxClient()
 
@@ -367,11 +383,15 @@ def get_play(
             res = s.get("resolutions") or s.get("resolution") or "Auto"
             fmt = s.get("format") or "MP4"
             if raw_url:
+                # Force HTTPS on direct stream URL
+                direct_url = raw_url
+                if direct_url.startswith("http://"):
+                    direct_url = "https://" + direct_url[7:]
                 clean_streams.append({
                     "resolution": res,
                     "format": fmt,
-                    "raw_url": raw_url,
-                    "stream_url": f"/api/proxy-stream?url={quote(raw_url, safe='')}",
+                    "raw_url": direct_url,
+                    "stream_url": direct_url,
                     "vipLocked": s.get("vipLocked", False),
                 })
 
@@ -418,7 +438,11 @@ def get_play(
 
 @app.get("/api/proxy-stream")
 async def proxy_stream(request: Request, url: Optional[str] = None):
-    """Proxies Hakuna CDN MP4 streams over HTTP/2 with Range header support and proper Referer bypass."""
+    """
+    Video proxying is permanently disabled to protect the 512MB RAM container on Render.
+    Issues an immediate HTTP 307 Temporary Redirect to the direct CDN stream URL.
+    Zero video bytes are buffered or piped through Render memory.
+    """
     raw_query = str(request.query_params)
     target_url = ""
 
@@ -428,81 +452,21 @@ async def proxy_stream(request: Request, url: Optional[str] = None):
     elif url:
         target_url = unquote(url)
 
-    if not target_url.startswith("http"):
+    if not target_url or not target_url.startswith("http"):
         raise HTTPException(status_code=400, detail="Invalid stream URL")
 
     # Force HTTPS to prevent CDN HTTP 426 / 403 blocks
     if target_url.startswith("http://"):
         target_url = "https://" + target_url[7:]
 
-    req_headers = {
-        "User-Agent": (
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-            "AppleWebKit/537.36 (KHTML, like Gecko) "
-            "Chrome/124.0.0.0 Safari/537.36"
-        ),
-        "Accept": "*/*",
-        "Accept-Language": "en-US,en;q=0.9",
-        "Referer": "https://movie-box.co/",
-        "Origin": "https://movie-box.co",
-        "Sec-Ch-Ua": '"Chromium";v="124", "Google Chrome";v="124", "Not-A.Brand";v="99"',
-        "Sec-Ch-Ua-Mobile": "?0",
-        "Sec-Ch-Ua-Platform": '"Windows"',
-        "Sec-Fetch-Dest": "video",
-        "Sec-Fetch-Mode": "cors",
-        "Sec-Fetch-Site": "cross-site",
-    }
-
-    range_header = request.headers.get("range")
-    if range_header:
-        req_headers["Range"] = range_header
-
-    client_http = httpx.AsyncClient(http2=True, timeout=60.0, follow_redirects=True)
-
-    try:
-        req = client_http.build_request("GET", target_url, headers=req_headers)
-        response = await client_http.send(req, stream=True)
-
-        if response.status_code >= 400:
-            err_body = await response.aread()
-            await response.aclose()
-            await client_http.aclose()
-            logger.error(f"Upstream CDN error HTTP {response.status_code}: {err_body[:200]}")
-            raise HTTPException(
-                status_code=response.status_code,
-                detail=f"CDN stream unavailable (HTTP {response.status_code})"
-            )
-
-        resp_headers = {
-            "Accept-Ranges": "bytes",
-            "Content-Type": response.headers.get("Content-Type", "video/mp4"),
+    return RedirectResponse(
+        url=target_url,
+        status_code=307,
+        headers={
             "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Headers": "Range",
-        }
-        if "Content-Range" in response.headers:
-            resp_headers["Content-Range"] = response.headers["Content-Range"]
-        if "Content-Length" in response.headers:
-            resp_headers["Content-Length"] = response.headers["Content-Length"]
-
-        async def stream_generator():
-            try:
-                async for chunk in response.aiter_bytes(chunk_size=128 * 1024):
-                    yield chunk
-            finally:
-                await response.aclose()
-                await client_http.aclose()
-
-        return StreamingResponse(
-            stream_generator(),
-            status_code=response.status_code,
-            headers=resp_headers,
-        )
-    except HTTPException:
-        raise
-    except Exception as e:
-        await client_http.aclose()
-        logger.error(f"Streaming proxy exception: {e}")
-        raise HTTPException(status_code=502, detail=f"CDN streaming error: {str(e)}")
+            "Cache-Control": "public, max-age=3600",
+        },
+    )
 
 
 @app.get("/api/proxy-subtitle")
