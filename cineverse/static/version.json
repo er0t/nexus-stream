@@ -1,16 +1,16 @@
 {
   "nexus_hd": {
-    "version_code": 3,
-    "version_name": "1.2.2",
+    "version_code": 4,
+    "version_name": "1.2.3",
     "apk_url": "https://nexushd.site/NexusHD.apk",
-    "changelog": "Resolved CDN stream unavailable error with native Conscrypt TLS engine.",
+    "changelog": "Resolved ad initialization race condition and layout inflation bug.",
     "force": true
   },
   "nexus_tv": {
-    "version_code": 3,
-    "version_name": "1.2.2",
+    "version_code": 5,
+    "version_name": "1.2.4",
     "apk_url": "https://nexushd.site/NexusTV.apk",
-    "changelog": "Resolved CDN stream unavailable error with native Conscrypt TLS engine.",
+    "changelog": "Fixed Android 12 search crash and resolved D-pad control focus navigation.",
     "force": true
   }
 }
