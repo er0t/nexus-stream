@@ -128,9 +128,19 @@ class MovieBoxClient:
         res.raise_for_status()
         return res.json()
 
-    def search(self, keyword: str, page: int = 1, page_size: int = 24) -> Dict[str, Any]:
-        """Searches titles by keyword."""
+    def search(
+        self,
+        keyword: str,
+        page: int = 1,
+        page_size: int = 24,
+        subject_type: Optional[int] = None,
+    ) -> Dict[str, Any]:
+        """Searches titles by keyword.
+        subject_type: 1 = Movie, 2 = TV Series, None = All/Unfiltered
+        """
         payload = {"keyword": keyword, "pageNum": page, "pageSize": page_size}
+        if subject_type is not None:
+            payload["subjectType"] = subject_type
         res = self._auth_request("POST", "/subject/search", json_data=payload)
         res.raise_for_status()
         return res.json()

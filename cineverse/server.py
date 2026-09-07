@@ -102,32 +102,101 @@ def get_home():
 
 
 @app.get("/api/search")
-def search(q: str = Query(..., min_length=1), page: int = 1, pageSize: int = 30):
-    """Searches the movie and series catalog."""
+def search(
+    q: str = Query(..., min_length=1),
+    page: int = 1,
+    pageSize: int = 30,
+    type: Optional[str] = None,
+):
+    """Searches the catalog, fetching and merging both TV Series and Movies."""
     try:
-        raw = client.search(keyword=q, page=page, page_size=pageSize)
-        data = raw.get("data", {})
-        items = data.get("items", [])
+        clean_q = q.strip()
+        target_types = []
+        if type:
+            t = type.lower().strip()
+            if t in ("movie", "movies", "1"):
+                target_types = [1]
+            elif t in ("series", "tv", "show", "shows", "2"):
+                target_types = [2]
+
+        raw_items = []
+        if target_types:
+            for st in target_types:
+                raw = client.search(keyword=clean_q, page=page, page_size=pageSize, subject_type=st)
+                raw_items.extend(raw.get("data", {}).get("items", []))
+        else:
+            # Query both TV Series (subjectType=2) and Movies (subjectType=1) so TV shows are not suppressed
+            raw_series = client.search(keyword=clean_q, page=page, page_size=pageSize, subject_type=2)
+            raw_movies = client.search(keyword=clean_q, page=page, page_size=pageSize, subject_type=1)
+            items_s = raw_series.get("data", {}).get("items", [])
+            items_m = raw_movies.get("data", {}).get("items", [])
+
+            # Interleave results so both series and movies are well represented
+            max_len = max(len(items_s), len(items_m))
+            seen_ids = set()
+            for i in range(max_len):
+                if i < len(items_s):
+                    it = items_s[i]
+                    sid = str(it.get("subjectId"))
+                    if sid not in seen_ids:
+                        seen_ids.add(sid)
+                        raw_items.append(it)
+                if i < len(items_m):
+                    it = items_m[i]
+                    sid = str(it.get("subjectId"))
+                    if sid not in seen_ids:
+                        seen_ids.add(sid)
+                        raw_items.append(it)
+
+            # Fallback to general search if specific queries returned empty
+            if not raw_items:
+                raw_gen = client.search(keyword=clean_q, page=page, page_size=pageSize)
+                raw_items = raw_gen.get("data", {}).get("items", [])
+
+        # Prioritize titles matching or starting with the search query
+        q_low = clean_q.lower()
+        raw_items.sort(key=lambda x: (
+            0 if (x.get("title") or x.get("name") or "").lower().startswith(q_low) else
+            1 if q_low in (x.get("title") or x.get("name") or "").lower() else 2
+        ))
 
         results = []
-        for s in items:
+        seen_result_ids = set()
+        for s in raw_items:
+            sid = str(s.get("subjectId") or s.get("id") or "")
+            if not sid or sid in seen_result_ids:
+                continue
+            seen_result_ids.add(sid)
+
             cover = s.get("cover", {})
-            img_url = cover.get("url") if isinstance(cover, dict) else s.get("cover")
+            img_url = cover.get("url") if isinstance(cover, dict) else (s.get("cover") or s.get("poster") or s.get("thumbnail") or "")
+
+            # TV series and movie title fallback mapping
+            title = s.get("title") or s.get("name") or s.get("show_name") or s.get("series_title") or s.get("movie_title") or s.get("postTitle") or ""
+
+            # Determine subjectType (1=Movie, 2=Series)
+            st = s.get("subjectType")
+            if not st:
+                if s.get("season") or s.get("episodes") or s.get("is_series") or str(s.get("type", "")).lower() in ("series", "tv", "show"):
+                    st = 2
+                else:
+                    st = 1
+
             results.append({
-                "id": str(s.get("subjectId")),
-                "title": s.get("title"),
+                "id": sid,
+                "title": title,
                 "cover": img_url,
                 "releaseDate": s.get("releaseDate", ""),
                 "genre": s.get("genre", ""),
                 "duration": s.get("duration", 0),
                 "detailPath": s.get("detailPath", ""),
-                "subjectType": s.get("subjectType", 1),
+                "subjectType": int(st),
             })
 
         return {
             "status": "success",
             "query": q,
-            "total": data.get("pager", {}).get("totalCount", len(results)),
+            "total": len(results),
             "items": results,
         }
     except Exception as e:
