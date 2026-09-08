@@ -7,10 +7,10 @@
     "force": true
   },
   "nexus_tv": {
-    "version_code": 17,
-    "version_name": "1.2.16",
+    "version_code": 18,
+    "version_name": "1.2.17",
     "apk_url": "https://nexushd.site/NexusTV.apk",
-    "changelog": "Fixed Fire TV Stick blank screen regression, restored clean system SSL engine for poster loading, added instant cached catalog startup with dual cloud fallback, and optimized keep-alive reliability.",
+    "changelog": "Mandatory update: High-speed direct in-app HTTP updater, non-bypassable update protection, Amazon Fire TV Stick playback stability fixes, and instant cached catalog startup.",
     "force": true
   }
 }
