@@ -619,12 +619,19 @@ def get_logo():
     return FileResponse(os.path.join(STATIC_DIR, "nexus_logo.png"))
 
 
+@app.head("/")
+def head_root():
+    return Response(status_code=200)
+
+
 @app.get("/health")
+@app.head("/health")
 def health_check():
     return {"status": "ok"}
 
 
 @app.get("/api/ad-config")
+@app.head("/api/ad-config")
 def get_ad_config():
     return {
         "ads_enabled": True,
@@ -634,6 +641,7 @@ def get_ad_config():
 
 
 @app.get("/api/version")
+@app.head("/api/version")
 def get_version():
     return {
         "versionCode": 99,
@@ -652,14 +660,18 @@ def get_version():
 
 
 @app.get("/download")
+@app.head("/download")
 @app.get("/download.apk")
+@app.head("/download.apk")
 def download_redirect():
     from fastapi.responses import RedirectResponse
     return RedirectResponse(url="https://nexushd.site/NexusTV.apk", status_code=307)
 
 
 @app.get("/version.json")
+@app.head("/version.json")
 @app.get("/static/version.json")
+@app.head("/static/version.json")
 def get_version_json():
     # Load version.json from web-landing or parent directory
     for path in ["version.json", "../version.json", "web-landing/version.json", "cineverse/static/version.json", "static/version.json"]:
