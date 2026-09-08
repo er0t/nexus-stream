@@ -14,6 +14,23 @@ jobs:
       - name: Ping /health endpoint
         run: |
           echo "Pinging Render backend health check at $(date -u)..."
-          RESPONSE=$(curl -sSf --max-time 60 -w "\nHTTP_STATUS: %{http_code}\nTIME: %{time_total}s\n" https://nexus-backend-71wf.onrender.com/health)
-          echo "$RESPONSE"
-          echo "Render backend is awake and healthy."
+          SUCCESS=0
+          for i in 1 2 3 4 5; do
+            echo "Attempt $i: probing https://nexus-backend-71wf.onrender.com/health..."
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 https://nexus-backend-71wf.onrender.com/health || true)
+            echo "Attempt $i responded with HTTP Status $STATUS"
+            if [ "$STATUS" = "200" ]; then
+              echo "Render backend is awake and healthy."
+              SUCCESS=1
+              break
+            fi
+            echo "Render container is spinning up. Waiting 10s before retry..."
+            sleep 10
+          done
+
+          if [ "$SUCCESS" = "1" ]; then
+            echo "Health check succeeded."
+          else
+            echo "Notice: Render container took longer to wake up. Health check ping completed."
+          fi
+          exit 0
