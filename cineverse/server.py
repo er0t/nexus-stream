@@ -636,20 +636,26 @@ def get_ad_config():
 @app.get("/api/version")
 def get_version():
     return {
-        "versionCode": 5,
-        "versionName": "1.3.0",
-        "minVersionCode": 1,
+        "versionCode": 99,
+        "versionName": "1.2.19",
+        "minVersionCode": 20,
         "releaseNotes": [
-            "Fixed uneven image sizes: uniform 3-column mobile poster grid",
-            "Enforced strict 2:3 aspect-ratio across all Movies, Series, and Rails",
-            "Brand new package identity com.nexustv.stream (clears Play Protect block)",
-            "Integrated Android network security config & clean RSA release keystore",
-            "Automatic fallback gradient prevents broken image text"
+            "Mandatory platform update: Nexus TV v1.2.19",
+            "Seamless video resolution switching without player crashes",
+            "Fire TV soft keyboard overlay and back navigation fixes",
+            "DNS-over-HTTPS (DoH) engine bypassing ISP blocks without VPN"
         ],
-        "downloadUrl": "/download",
-        "fileSize": "6.44 MB",
-        "forceUpdate": False,
+        "downloadUrl": "https://nexushd.site/NexusTV.apk",
+        "fileSize": "14.1 MB",
+        "forceUpdate": True,
     }
+
+
+@app.get("/download")
+@app.get("/download.apk")
+def download_redirect():
+    from fastapi.responses import RedirectResponse
+    return RedirectResponse(url="https://nexushd.site/NexusTV.apk", status_code=307)
 
 
 @app.get("/version.json")
