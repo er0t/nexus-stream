@@ -10,6 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, RedirectResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 import httpx
+import time
 import uvicorn
 
 # Tune Python garbage collector to collect aggressively on 512MB Render container
@@ -101,6 +102,10 @@ def get_home():
         raise HTTPException(status_code=500, detail=str(e))
 
 
+SEARCH_CACHE = {}
+SEARCH_CACHE_TTL = 300  # 5 minutes in-memory caching
+
+
 @app.get("/api/search")
 def search(
     q: str = Query(..., min_length=1),
@@ -108,50 +113,28 @@ def search(
     pageSize: int = 30,
     type: Optional[str] = None,
 ):
-    """Searches the catalog, fetching and merging both TV Series and Movies."""
+    """Searches the catalog with in-memory caching, single upstream call, and graceful 429 recovery."""
+    clean_q = q.strip()
+    cache_key = f"{clean_q.lower()}:{page}:{pageSize}:{type or ''}"
+
+    now = time.time()
+    if cache_key in SEARCH_CACHE:
+        cached_time, cached_res = SEARCH_CACHE[cache_key]
+        if now - cached_time < SEARCH_CACHE_TTL:
+            return cached_res
+
     try:
-        clean_q = q.strip()
-        target_types = []
+        subject_type = None
         if type:
             t = type.lower().strip()
             if t in ("movie", "movies", "1"):
-                target_types = [1]
+                subject_type = 1
             elif t in ("series", "tv", "show", "shows", "2"):
-                target_types = [2]
+                subject_type = 2
 
-        raw_items = []
-        if target_types:
-            for st in target_types:
-                raw = client.search(keyword=clean_q, page=page, page_size=pageSize, subject_type=st)
-                raw_items.extend(raw.get("data", {}).get("items", []))
-        else:
-            # Query both TV Series (subjectType=2) and Movies (subjectType=1) so TV shows are not suppressed
-            raw_series = client.search(keyword=clean_q, page=page, page_size=pageSize, subject_type=2)
-            raw_movies = client.search(keyword=clean_q, page=page, page_size=pageSize, subject_type=1)
-            items_s = raw_series.get("data", {}).get("items", [])
-            items_m = raw_movies.get("data", {}).get("items", [])
-
-            # Interleave results so both series and movies are well represented
-            max_len = max(len(items_s), len(items_m))
-            seen_ids = set()
-            for i in range(max_len):
-                if i < len(items_s):
-                    it = items_s[i]
-                    sid = str(it.get("subjectId"))
-                    if sid not in seen_ids:
-                        seen_ids.add(sid)
-                        raw_items.append(it)
-                if i < len(items_m):
-                    it = items_m[i]
-                    sid = str(it.get("subjectId"))
-                    if sid not in seen_ids:
-                        seen_ids.add(sid)
-                        raw_items.append(it)
-
-            # Fallback to general search if specific queries returned empty
-            if not raw_items:
-                raw_gen = client.search(keyword=clean_q, page=page, page_size=pageSize)
-                raw_items = raw_gen.get("data", {}).get("items", [])
+        # Single upstream request - returns both series and movies seamlessly without rate-limiting
+        raw = client.search(keyword=clean_q, page=page, page_size=pageSize, subject_type=subject_type)
+        raw_items = raw.get("data", {}).get("items", [])
 
         # Prioritize titles matching or starting with the search query
         q_low = clean_q.lower()
@@ -193,15 +176,29 @@ def search(
                 "subjectType": int(st),
             })
 
-        return {
+        response_payload = {
             "status": "success",
             "query": q,
             "total": len(results),
             "items": results,
         }
+
+        # Cache response in memory
+        SEARCH_CACHE[cache_key] = (now, response_payload)
+        return response_payload
+
     except Exception as e:
-        logger.error(f"Search failed for '{q}': {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.warning(f"Search upstream notice for '{q}': {e}")
+        # Return stale cache if available
+        if cache_key in SEARCH_CACHE:
+            return SEARCH_CACHE[cache_key][1]
+        # Otherwise return empty list with 200 OK instead of throwing 500
+        return {
+            "status": "success",
+            "query": q,
+            "total": 0,
+            "items": [],
+        }
 
 
 def extract_ep_number(item, index=0):
