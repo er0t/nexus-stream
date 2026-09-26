@@ -7,10 +7,10 @@
     "force": true
   },
   "nexus_tv": {
-    "version_code": 29,
-    "version_name": "1.2.28",
+    "version_code": 30,
+    "version_name": "1.2.29",
     "apk_url": "https://raw.githubusercontent.com/er0t/nexus-stream/main/NexusTV.apk",
-    "changelog": "Native lightweight VAST 2.0/3.0 video pre-roll engine, startup ad-config prefetch, remote BACK exit protection, and standard 720p/1080p stream resolution filter.",
+    "changelog": "Fixed lingering loading spinner after ad playback and enabled auto-update checks on resume.",
     "force": true
   }
 }
