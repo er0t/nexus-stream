@@ -630,9 +630,19 @@ def health_check():
 @app.get("/api/ad-config")
 @app.head("/api/ad-config")
 def get_ad_config():
+    vast_url = os.environ.get(
+        "VAST_TAG_URL",
+        "https://funny-tooth.com/d_m.FszPdEGnNOvjZVGxUU/decmt9luZZJUWlnkbPHTKcx0VN/jaMa5yM_T/MityNBzlQR2/MAzOkcxmNBwm"
+    )
+    ads_enabled = os.environ.get("ADS_ENABLED", "true").lower() in ("true", "1", "yes")
+    cooldown = int(os.environ.get("AD_COOLDOWN_MINUTES", "6"))
+    skip_offset = int(os.environ.get("AD_SKIP_OFFSET_SECONDS", "5"))
     return {
-        "ads_enabled": True,
-        "cooldown_minutes": 6,
+        "ads_enabled": ads_enabled,
+        "vast_tag_url": vast_url,
+        "vast_url": vast_url,
+        "skip_offset_seconds": skip_offset,
+        "cooldown_minutes": cooldown,
         "startapp_app_id": "208405542",
     }
 
