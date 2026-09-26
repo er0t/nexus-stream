@@ -61,23 +61,15 @@
       ]
     },
     {
-      "source": "/sw.js",
+      "source": "/0a3673e5a8ce811882d5.txt",
       "headers": [
         {
           "key": "Content-Type",
-          "value": "application/javascript; charset=utf-8"
-        },
-        {
-          "key": "Service-Worker-Allowed",
-          "value": "/"
+          "value": "text/plain; charset=utf-8"
         },
         {
           "key": "Cache-Control",
-          "value": "no-cache, no-store, must-revalidate, max-age=0"
-        },
-        {
-          "key": "Pragma",
-          "value": "no-cache"
+          "value": "public, max-age=3600"
         },
         {
           "key": "Access-Control-Allow-Origin",

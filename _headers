@@ -15,10 +15,9 @@
   Cache-Control: no-cache, no-store, must-revalidate, max-age=0
   Pragma: no-cache
 
-/sw.js
-  Content-Type: application/javascript; charset=utf-8
-  Service-Worker-Allowed: /
+/0a3673e5a8ce811882d5.txt
+  Content-Type: text/plain; charset=utf-8
   Access-Control-Allow-Origin: *
-  Cache-Control: no-cache, no-store, must-revalidate, max-age=0
-  Pragma: no-cache
+  Cache-Control: public, max-age=3600
+
 
