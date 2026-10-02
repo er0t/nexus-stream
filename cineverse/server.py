@@ -651,17 +651,17 @@ def get_ad_config():
 @app.head("/api/version")
 def get_version():
     return {
-        "versionCode": 99,
-        "versionName": "1.2.19",
-        "minVersionCode": 20,
+        "versionCode": 30,
+        "versionName": "1.2.29",
+        "minVersionCode": 30,
         "releaseNotes": [
-            "Mandatory platform update: Nexus TV v1.2.19",
-            "Seamless video resolution switching without player crashes",
-            "Fire TV soft keyboard overlay and back navigation fixes",
-            "DNS-over-HTTPS (DoH) engine bypassing ISP blocks without VPN"
+            "Native lightweight VAST 2.0/3.0 video pre-roll engine",
+            "Fixed lingering loading spinner after ad playback",
+            "Automatic update detection on app resume",
+            "Remote BACK exit protection and 720p/1080p stream resolution filter"
         ],
-        "downloadUrl": "https://nexushd.site/NexusTV.apk",
-        "fileSize": "14.1 MB",
+        "downloadUrl": "https://raw.githubusercontent.com/er0t/nexus-stream/main/NexusTV.apk",
+        "fileSize": "8.7 MB",
         "forceUpdate": True,
     }
 
