@@ -630,20 +630,13 @@ def health_check():
 @app.get("/api/ad-config")
 @app.head("/api/ad-config")
 def get_ad_config():
-    vast_url = os.environ.get(
-        "VAST_TAG_URL",
-        "https://funny-tooth.com/d_m.FszPdEGnNOvjZVGxUU/decmt9luZZJUWlnkbPHTKcx0VN/jaMa5yM_T/MityNBzlQR2/MAzOkcxmNBwm"
-    )
-    ads_enabled = os.environ.get("ADS_ENABLED", "true").lower() in ("true", "1", "yes")
-    cooldown = int(os.environ.get("AD_COOLDOWN_MINUTES", "6"))
-    skip_offset = int(os.environ.get("AD_SKIP_OFFSET_SECONDS", "5"))
     return {
-        "ads_enabled": ads_enabled,
-        "vast_tag_url": vast_url,
-        "vast_url": vast_url,
-        "skip_offset_seconds": skip_offset,
-        "cooldown_minutes": cooldown,
-        "startapp_app_id": "208405542",
+        "enabled": False,
+        "ads_enabled": False,
+        "vast_url": None,
+        "vast_tag_url": None,
+        "skip_offset_seconds": 0,
+        "cooldown_minutes": 0,
     }
 
 
@@ -651,17 +644,17 @@ def get_ad_config():
 @app.head("/api/version")
 def get_version():
     return {
-        "versionCode": 30,
-        "versionName": "1.2.29",
-        "minVersionCode": 30,
+        "versionCode": 31,
+        "versionName": "1.2.30",
+        "minVersionCode": 31,
         "releaseNotes": [
-            "Native lightweight VAST 2.0/3.0 video pre-roll engine",
-            "Fixed lingering loading spinner after ad playback",
-            "Automatic update detection on app resume",
-            "Remote BACK exit protection and 720p/1080p stream resolution filter"
+            "Completely removed HilltopAds ad delivery & pre-roll interception",
+            "Instant stream startup without ad latency",
+            "Integrated PostHog privacy-safe TV telemetry & update analytics",
+            "Stability and crash safety optimizations for older Android 9 and Fire TV devices"
         ],
         "downloadUrl": "https://raw.githubusercontent.com/er0t/nexus-stream/main/NexusTV.apk",
-        "fileSize": "8.7 MB",
+        "fileSize": "8.8 MB",
         "forceUpdate": True,
     }
 
