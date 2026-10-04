@@ -1,3 +1,7 @@
-# Redirects & Static Routing for Cloudflare Pages / Netlify
-/privacy    /privacy.html    200
-/app-ads.txt /app-ads.txt   200
+# Redirects & Static Routing for Cloudflare Pages / Netlify / Vercel
+/beta           /NexusTV-Beta.apk 302
+/b              /NexusTV-Beta.apk 302
+/tv             /NexusTV.apk      302
+/hd             /NexusHD.apk      302
+/privacy        /privacy.html     200
+/app-ads.txt    /app-ads.txt      200
