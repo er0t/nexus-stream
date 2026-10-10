@@ -847,22 +847,32 @@
     el.btnNextEp.style.display = isSeries ? 'flex' : 'none';
 
     // Resolve Stream URL:
-    // Route protected CDN stream through /api/proxy-stream with HTTP/2 and Referer injection
+    // Route protected CDN stream through streaming proxy with Referer injection
     let finalStreamUrl = playData.streamUrl;
-    if (finalStreamUrl.includes('hakunaymatata.com') || finalStreamUrl.includes('bcdnxw') || finalStreamUrl.includes('aoneroom.com')) {
-      finalStreamUrl = `${API_BASE}/api/proxy-stream?url=${encodeURIComponent(playData.streamUrl)}`;
+    if (finalStreamUrl && (finalStreamUrl.includes('hakunaymatata.com') || finalStreamUrl.includes('bcdnxw') || finalStreamUrl.includes('aoneroom.com'))) {
+      if (window.location.protocol.startsWith('http') && (window.location.hostname === 'nexushd.site' || window.location.hostname.endsWith('vercel.app'))) {
+        finalStreamUrl = `/api/proxy-stream?url=${encodeURIComponent(playData.streamUrl)}`;
+      } else {
+        finalStreamUrl = `https://nexushd.site/api/proxy-stream?url=${encodeURIComponent(playData.streamUrl)}`;
+      }
     }
 
     el.mainVideo.src = finalStreamUrl;
     el.mainVideo.load();
 
-    // Auto-fallback if proxy or browser encounters network hiccup
+    // Auto-fallback if primary proxy encounters network hiccup
     el.mainVideo.onerror = () => {
-      console.warn('Video element error. Trying direct URL fallback...');
-      if (el.mainVideo.src !== playData.streamUrl) {
-        el.mainVideo.src = playData.streamUrl;
+      console.warn('Primary stream proxy error. Trying secondary fallback...');
+      const fallbackUrl = `${API_BASE}/api/proxy-stream?url=${encodeURIComponent(playData.streamUrl)}`;
+      if (el.mainVideo.src !== fallbackUrl && el.mainVideo.src !== playData.streamUrl) {
+        el.mainVideo.src = fallbackUrl;
         el.mainVideo.load();
-        el.mainVideo.play().catch(e => console.log('Direct fallback blocked:', e));
+        el.mainVideo.play().catch(e => {
+          console.log('Secondary proxy blocked, trying direct URL:', e);
+          el.mainVideo.src = playData.streamUrl;
+          el.mainVideo.load();
+          el.mainVideo.play().catch(err => console.log('Direct fallback blocked:', err));
+        });
       }
     };
 
@@ -874,7 +884,14 @@
       showToast(`Resumed playback at ${formatTime(saved.progress)}`);
     }
 
-    el.mainVideo.play().catch(e => console.log('Autoplay notice:', e));
+    const playPromise = el.mainVideo.play();
+    if (playPromise !== undefined) {
+      playPromise.catch(e => {
+        console.log('Autoplay gesture required by browser:', e);
+        el.playerCenterPlay.style.display = 'flex';
+        showPlayerControls();
+      });
+    }
 
     // Setup Subtitles
     setupSubtitles(playData.captions || []);
