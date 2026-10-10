@@ -10,7 +10,7 @@
     "version_code": 31,
     "version_name": "1.2.30",
     "apk_url": "https://raw.githubusercontent.com/er0t/nexus-stream/main/NexusTV.apk",
-    "changelog": "Zero ad latency: Removed HilltopAds and integrated PostHog privacy-safe analytics.",
+    "changelog": "Fixed search with dual-query movies and series support and Leanback focus handling.",
     "force": true
   }
 }
