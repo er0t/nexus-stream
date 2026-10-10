@@ -572,6 +572,65 @@ async def proxy_stream(request: Request, url: Optional[str] = None):
         return RedirectResponse(url=target_url, status_code=307)
 
 
+@app.get("/api/debug-stream")
+async def debug_stream(url: str):
+    import sys
+    info = {"python": sys.version}
+    try:
+        import h2
+        info["h2_version"] = h2.__version__
+    except Exception as ie:
+        info["h2_error"] = str(ie)
+
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+        "Referer": "https://movie-box.co/",
+        "Origin": "https://movie-box.co",
+        "Accept": "*/*",
+        "Sec-Fetch-Dest": "video",
+        "Sec-Fetch-Mode": "cors",
+        "Sec-Fetch-Site": "cross-site",
+        "Range": "bytes=0-100",
+    }
+
+    try:
+        async with httpx.AsyncClient(http2=True, timeout=10.0, follow_redirects=True) as c:
+            r = await c.get(url, headers=headers)
+            info["httpx_h2"] = {
+                "status": r.status_code,
+                "version": r.http_version,
+                "headers": dict(r.headers),
+                "snippet": r.text[:100]
+            }
+    except Exception as e:
+        info["httpx_h2_error"] = str(e)
+
+    try:
+        async with httpx.AsyncClient(http2=False, timeout=10.0, follow_redirects=True) as c:
+            r = await c.get(url, headers=headers)
+            info["httpx_h1"] = {
+                "status": r.status_code,
+                "version": r.http_version,
+                "headers": dict(r.headers),
+                "snippet": r.text[:100]
+            }
+    except Exception as e:
+        info["httpx_h1_error"] = str(e)
+
+    try:
+        import requests as req_lib
+        r = req_lib.get(url, headers={"Referer": "https://movie-box.co/", "Range": "bytes=0-100"}, timeout=10)
+        info["requests"] = {
+            "status": r.status_code,
+            "headers": dict(r.headers),
+            "len": len(r.content)
+        }
+    except Exception as e:
+        info["requests_error"] = str(e)
+
+    return info
+
+
 @app.get("/api/proxy-subtitle")
 async def proxy_subtitle(request: Request, url: Optional[str] = None):
     """Fetches SRT subtitles from CDN, converts them to standard WebVTT format,
