@@ -248,7 +248,7 @@
   }
 
   // ==========================================================================
-  // Media Card Rendering Component (Stremio 2:3 Ratio)
+  // Media Card Component (Inspired by dexter.pw)
   // ==========================================================================
   function createMediaCard(item) {
     const card = document.createElement('div');
@@ -256,38 +256,58 @@
     card.setAttribute('data-id', item.id);
 
     const isSeries = item.subjectType === 2;
-    const typeLabel = isSeries ? 'Series' : 'Movie';
+    const qualityLabel = isSeries ? 'HD' : (parseFloat(item.score || 0) >= 8.2 ? '4K' : 'HD');
     const year = (item.releaseDate || '').substring(0, 4) || '2024';
-    const score = item.score || '8.4';
-    const coverUrl = item.cover || 'https://via.placeholder.com/300x450/0a142a/38bdf8?text=Nexus';
+    const score = item.score ? Number(item.score).toFixed(1) : '8.4';
+    const coverUrl = item.cover || 'https://via.placeholder.com/300x450/0f1015/38bdf8?text=Nexus';
+    const primaryGenre = item.genre ? escapeHtml(item.genre.split(',')[0].trim()) : (isSeries ? 'Series' : 'Movie');
 
     card.innerHTML = `
-      <div class="poster-box">
-        <img class="poster-img" src="${coverUrl}" alt="${escapeHtml(item.title)}" loading="lazy" onerror="this.src='https://via.placeholder.com/300x450/0a142a/38bdf8?text=Nexus'">
-        <div class="card-badge-top-left">${typeLabel}</div>
-        <div class="card-badge-top-right">
+      <!-- Poster Image (Micro-Zoom) -->
+      <img 
+        class="poster-img" 
+        src="${coverUrl}" 
+        alt="${escapeHtml(item.title)}" 
+        loading="lazy" 
+        onerror="this.src='https://via.placeholder.com/300x450/0f1015/38bdf8?text=Nexus'"
+      />
+
+      <!-- Scrim Gradient Overlay -->
+      <div class="scrim-overlay"></div>
+
+      <!-- Top Glass Badges -->
+      <div class="card-glass-badges">
+        <span class="badge-quality">${qualityLabel}</span>
+        <span class="badge-rating">
           <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
           <span>${score}</span>
-        </div>
-        <div class="card-play-overlay">
-          <div class="play-circle" title="Play">
-            <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
-              <polygon points="5 3 19 12 5 21 5 3"></polygon>
-            </svg>
-          </div>
+        </span>
+      </div>
+
+      <!-- Centered Play Icon on Hover -->
+      <div class="card-play-action">
+        <div class="play-btn-circle" title="Play">
+          <svg class="play-svg" viewBox="0 0 24 24">
+            <path d="M8 5v14l11-7z"/>
+          </svg>
         </div>
       </div>
-      <div class="card-info">
-        <div class="card-title" title="${escapeHtml(item.title)}">${escapeHtml(item.title)}</div>
+
+      <!-- Bottom Metadata (Translates upward on hover) -->
+      <div class="card-metadata">
+        <h3 class="card-title" title="${escapeHtml(item.title)}">
+          ${escapeHtml(item.title)}
+        </h3>
         <div class="card-sub">
+          <span>${primaryGenre}</span>
+          <span class="dot">•</span>
           <span>${year}</span>
-          <span>${item.genre ? escapeHtml(item.genre.split(',')[0]) : ''}</span>
         </div>
       </div>
     `;
 
     card.addEventListener('click', (e) => {
-      if (e.target.closest('.play-circle')) {
+      if (e.target.closest('.card-play-action') || e.target.closest('.play-btn-circle')) {
         e.stopPropagation();
         playMediaDirectly(item);
       } else {
@@ -427,7 +447,72 @@
 
   function renderDiscoverSections(sections) {
     el.discoverSections.innerHTML = '';
+    if (!sections || !sections.length) return;
 
+    // 1. Build Signature "Top 10 Worldwide Today" Rail (dexter.pw / Netflix format)
+    const allItems = [];
+    const seenTopIds = new Set();
+    sections.forEach(s => {
+      (s.items || []).forEach(it => {
+        if (!seenTopIds.has(it.id)) {
+          seenTopIds.add(it.id);
+          allItems.push(it);
+        }
+      });
+    });
+
+    const top10Items = allItems.slice(0, 10);
+    if (top10Items.length >= 5) {
+      const top10Sec = document.createElement('section');
+      top10Sec.className = 'catalog-section top10-section';
+      top10Sec.innerHTML = `
+        <div class="section-header">
+          <div class="section-title-wrap">
+            <h2 class="section-title">Top 10 Worldwide Today</h2>
+            <span class="collection-pill">
+              <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+              Global Daily Ranks
+            </span>
+          </div>
+        </div>
+        <div class="carousel-wrap">
+          <button class="carousel-arrow prev" title="Previous">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+          </button>
+          <div class="cards-carousel top10-carousel"></div>
+          <button class="carousel-arrow next" title="Next">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </button>
+        </div>
+      `;
+
+      const top10Carousel = top10Sec.querySelector('.cards-carousel');
+      const prevBtn = top10Sec.querySelector('.carousel-arrow.prev');
+      const nextBtn = top10Sec.querySelector('.carousel-arrow.next');
+
+      prevBtn.addEventListener('click', () => {
+        top10Carousel.scrollBy({ left: -top10Carousel.clientWidth * 0.75, behavior: 'smooth' });
+      });
+      nextBtn.addEventListener('click', () => {
+        top10Carousel.scrollBy({ left: top10Carousel.clientWidth * 0.75, behavior: 'smooth' });
+      });
+
+      top10Items.forEach((item, index) => {
+        const wrap = document.createElement('div');
+        wrap.className = 'ranked-card-wrap';
+        wrap.innerHTML = `<span class="rank-number">${index + 1}</span>`;
+        wrap.appendChild(createMediaCard(item));
+        top10Carousel.appendChild(wrap);
+      });
+
+      el.discoverSections.appendChild(top10Sec);
+    }
+
+    // 2. Render Curated Franchise, Genre & Status Rails
     sections.forEach(sec => {
       const items = sec.items || [];
       if (!items.length) return;
@@ -435,9 +520,24 @@
       const secEl = document.createElement('section');
       secEl.className = 'catalog-section';
 
+      const isCollection = sec.title.toLowerCase().includes('fantasy') ||
+                           sec.title.toLowerCase().includes('superhero') ||
+                           sec.title.toLowerCase().includes('animation') ||
+                           sec.title.toLowerCase().includes('drama');
+
+      const pillHtml = isCollection
+        ? `<span class="collection-pill">
+             <svg viewBox="0 0 24 24"><path d="M19 4H5c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zM5 8h14v10H5V8z"/></svg>
+             ${items.length} Titles • Franchise Collection
+           </span>`
+        : '';
+
       secEl.innerHTML = `
         <div class="section-header">
-          <h2 class="section-title">${escapeHtml(sec.title)}</h2>
+          <div class="section-title-wrap">
+            <h2 class="section-title">${escapeHtml(sec.title)}</h2>
+            ${pillHtml}
+          </div>
         </div>
         <div class="carousel-wrap">
           <button class="carousel-arrow prev" title="Previous">
@@ -459,11 +559,11 @@
       const nextBtn = secEl.querySelector('.carousel-arrow.next');
 
       prevBtn.addEventListener('click', () => {
-        carousel.scrollBy({ left: -carousel.clientWidth, behavior: 'smooth' });
+        carousel.scrollBy({ left: -carousel.clientWidth * 0.75, behavior: 'smooth' });
       });
 
       nextBtn.addEventListener('click', () => {
-        carousel.scrollBy({ left: carousel.clientWidth, behavior: 'smooth' });
+        carousel.scrollBy({ left: carousel.clientWidth * 0.75, behavior: 'smooth' });
       });
 
       items.forEach(item => {

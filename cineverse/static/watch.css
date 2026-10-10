@@ -439,19 +439,19 @@ body {
 .hero-banner {
   position: relative;
   width: 100%;
-  height: 330px;
+  height: 420px;
   border-radius: var(--radius-lg);
   overflow: hidden;
-  margin-bottom: 1.75rem;
+  margin-bottom: 2.25rem;
   background-color: var(--bg-surface);
   border: 1px solid var(--border-subtle);
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.7);
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.8);
 }
 
 @media (max-width: 768px) {
   .hero-banner {
-    height: 210px;
-    margin-bottom: 1.25rem;
+    height: 250px;
+    margin-bottom: 1.5rem;
     border-radius: var(--radius-md);
   }
 }
@@ -633,14 +633,43 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 1.25rem;
+  margin-bottom: 1.15rem;
+}
+
+.section-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  flex-wrap: wrap;
 }
 
 .section-title {
   font-family: var(--font-display);
-  font-size: 1.4rem;
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.01em;
+}
+
+.collection-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.22rem 0.75rem;
+  border-radius: 9999px;
+  background: rgba(56, 189, 248, 0.1);
+  border: 1px solid rgba(56, 189, 248, 0.28);
+  color: var(--accent-cyan);
+  font-size: 0.72rem;
   font-weight: 700;
-  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.collection-pill svg {
+  width: 12px;
+  height: 12px;
+  fill: currentColor;
 }
 
 /* Carousel Outer Wrapper with Hover Navigation Arrows */
@@ -652,12 +681,14 @@ body {
 
 .cards-carousel {
   display: flex;
-  gap: 0.85rem;
+  gap: 1.15rem;
   overflow-x: auto;
   scroll-behavior: smooth;
   scroll-snap-type: x mandatory;
-  padding: 0.5rem 0.25rem 1.15rem;
+  padding: 0.5rem 0.25rem 1.65rem;
   scrollbar-width: none;
+  -ms-overflow-style: none;
+  -webkit-overflow-scrolling: touch;
   width: 100%;
 }
 
@@ -670,22 +701,23 @@ body {
   position: absolute;
   top: 50%;
   transform: translateY(-60%);
-  width: 36px;
-  height: 36px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
-  background: rgba(10, 20, 42, 0.92);
-  border: 1px solid var(--border-medium);
-  backdrop-filter: blur(12px);
-  color: var(--accent-cyan);
+  background: rgba(10, 11, 14, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  z-index: 20;
+  z-index: 25;
   opacity: 0;
   pointer-events: none;
   transition: all var(--transition-fast);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.7);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.8);
 }
 
 .carousel-wrap:hover .carousel-arrow {
@@ -694,231 +726,303 @@ body {
 }
 
 .carousel-arrow:hover {
-  background: var(--accent-cyan);
+  background: #ffffff;
   color: #030712;
+  border-color: #ffffff;
   transform: translateY(-60%) scale(1.1);
-  box-shadow: 0 0 16px var(--accent-cyan-glow);
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
 }
 
 .carousel-arrow.prev {
-  left: -16px;
+  left: -18px;
 }
 
 .carousel-arrow.next {
-  right: -16px;
+  right: -18px;
 }
 
 /* ==========================================================================
-   Poster Card Component (Compact Stremio Aesthetic for PC & Mobile)
+   Movie & Series Card Specification (Inspired by dexter.pw)
    ========================================================================== */
 .media-card {
   position: relative;
-  border-radius: var(--radius-sm);
-  overflow: hidden;
-  background: var(--bg-card);
+  aspect-ratio: 2 / 3;
+  width: 195px;
+  min-width: 195px;
+  flex: 0 0 195px;
   cursor: pointer;
+  overflow: hidden;
+  border-radius: 16px; /* rounded-2xl */
+  background: #0f1015;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 10px 24px -4px rgba(0, 0, 0, 0.6);
+  transition: border-color 0.3s ease-out, box-shadow 0.3s ease-out;
+  user-select: none;
   scroll-snap-align: start;
-  transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast);
-  border: 1px solid var(--border-subtle);
 }
 
-/* Responsive card widths so complete compact cards fit cleanly on all displays */
-.cards-carousel .media-card {
-  flex: 0 0 calc((100% - 9 * 0.75rem) / 10);
-  min-width: 105px;
-  max-width: 125px;
-}
-
-@media (min-width: 1680px) {
+@media (min-width: 1440px) {
   .cards-carousel .media-card {
-    flex: 0 0 calc((100% - 10 * 0.75rem) / 11);
-    max-width: 125px;
-  }
-}
-
-@media (min-width: 1360px) and (max-width: 1679px) {
-  .cards-carousel .media-card {
-    flex: 0 0 calc((100% - 8 * 0.75rem) / 9);
-    max-width: 120px;
-  }
-}
-
-@media (min-width: 1040px) and (max-width: 1359px) {
-  .cards-carousel .media-card {
-    flex: 0 0 calc((100% - 6 * 0.7rem) / 7);
-    max-width: 115px;
+    width: 205px;
+    min-width: 205px;
+    flex: 0 0 205px;
   }
 }
 
 @media (min-width: 768px) and (max-width: 1039px) {
   .cards-carousel .media-card {
-    flex: 0 0 calc((100% - 4 * 0.65rem) / 5);
-    max-width: 110px;
+    width: 175px;
+    min-width: 175px;
+    flex: 0 0 175px;
   }
 }
 
-@media (min-width: 480px) and (max-width: 767px) {
+@media (max-width: 767px) {
   .cards-carousel .media-card {
-    flex: 0 0 calc((100% - 3 * 0.55rem) / 4);
-    max-width: 100px;
-  }
-}
-
-@media (max-width: 479px) {
-  .cards-carousel .media-card {
-    flex: 0 0 calc((100% - 2 * 0.45rem) / 3);
-    max-width: 105px;
+    width: 148px;
+    min-width: 148px;
+    flex: 0 0 148px;
+    border-radius: 14px;
   }
 }
 
 .media-card:hover {
-  transform: translateY(-4px) scale(1.02);
-  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.7), 0 0 16px var(--accent-cyan-glow);
-  border-color: var(--accent-cyan);
-  z-index: 10;
+  border-color: rgba(255, 255, 255, 0.28);
+  box-shadow: 0 24px 48px -8px rgba(0, 0, 0, 0.85), 0 0 30px rgba(56, 189, 248, 0.14);
 }
 
-.poster-box {
-  width: 100%;
-  aspect-ratio: 2 / 3;
-  position: relative;
-  background: var(--bg-surface);
-  overflow: hidden;
-}
-
-.poster-img {
+/* 1. Poster Image Layer (Micro-Zoom) */
+.media-card .poster-img {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform var(--transition-smooth);
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
 }
 
 .media-card:hover .poster-img {
-  transform: scale(1.05);
+  transform: scale(1.08);
 }
 
-/* Top Badges */
-.card-badge-top-left {
+/* 2. Scrim Gradient Overlay */
+.media-card .scrim-overlay {
+  pointer-events: none;
   position: absolute;
-  top: 5px;
-  left: 5px;
-  padding: 0.12rem 0.35rem;
-  border-radius: 3px;
-  font-size: 0.58rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  background: rgba(3, 7, 18, 0.85);
-  backdrop-filter: blur(6px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  color: #fff;
+  inset: 0;
+  background: linear-gradient(to top, #0a0b0e 0%, rgba(0, 0, 0, 0.45) 55%, transparent 100%);
+  opacity: 0.85;
+  transition: opacity 0.3s ease-out;
+  z-index: 2;
 }
 
-.card-badge-top-right {
+.media-card:hover .scrim-overlay {
+  opacity: 0.95;
+}
+
+/* 3. Floating Glass Badges (Top Bar) */
+.media-card .card-glass-badges {
   position: absolute;
-  top: 5px;
-  right: 5px;
+  top: 0.75rem;
+  left: 0.75rem;
+  right: 0.75rem;
   display: flex;
   align-items: center;
-  gap: 0.2rem;
-  padding: 0.12rem 0.35rem;
-  border-radius: 3px;
-  font-size: 0.58rem;
-  font-weight: 700;
-  background: rgba(3, 7, 18, 0.88);
-  backdrop-filter: blur(6px);
-  border: 1px solid rgba(251, 191, 36, 0.35);
-  color: var(--accent-gold);
+  justify-content: space-between;
+  font-size: 0.72rem;
+  font-weight: 600;
+  z-index: 10;
+  pointer-events: none;
 }
 
-.card-badge-top-right svg {
-  width: 8px;
-  height: 8px;
+.media-card .badge-quality {
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.15);
+  padding: 0.15rem 0.5rem;
+  color: #ffffff;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  letter-spacing: 0.04em;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.media-card .badge-rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 0.15rem 0.5rem;
+  color: #fbbf24;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.media-card .badge-rating svg {
+  width: 11px;
+  height: 11px;
   fill: currentColor;
 }
 
-/* Play Hover Overlay */
-.card-play-overlay {
+/* 4. Centered Hover Action Trigger */
+.media-card .card-play-action {
   position: absolute;
   inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(3, 7, 18, 0.4);
   opacity: 0;
-  transition: opacity var(--transition-fast);
+  transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 12;
 }
 
-.media-card:hover .card-play-overlay {
+.media-card:hover .card-play-action {
   opacity: 1;
 }
 
-.play-circle {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: var(--grad-primary);
+.media-card .play-btn-circle {
   display: flex;
+  width: 48px;
+  height: 48px;
   align-items: center;
   justify-content: center;
-  color: #fff;
-  box-shadow: 0 3px 12px var(--accent-cyan-glow);
-  transform: scale(0.85);
-  transition: transform var(--transition-fast);
+  border-radius: 50%;
+  background: #ffffff;
+  color: #0a0b0e;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.8), 0 0 20px rgba(255, 255, 255, 0.3);
+  transform: scale(0.9);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.play-circle svg {
-  width: 16px;
-  height: 16px;
+.media-card:hover .play-btn-circle {
+  transform: scale(1.1);
 }
 
-.media-card:hover .play-circle {
-  transform: scale(1);
+.media-card .play-svg {
+  width: 22px;
+  height: 22px;
+  fill: currentColor;
+  transform: translateX(1.5px);
 }
 
-.card-info {
-  padding: 0.35rem 0.4rem 0.4rem;
-  background: var(--bg-card);
+/* 5. Bottom Metadata (Translates upward on hover) */
+.media-card .card-metadata {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 0.85rem;
+  z-index: 10;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
 }
 
-.card-title {
-  font-size: 0.74rem;
-  font-weight: 600;
-  line-height: 1.25;
-  color: var(--text-main);
+.media-card:hover .card-metadata {
+  transform: translateY(-4px);
+}
+
+.media-card .card-title {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  margin-bottom: 0.1rem;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 0.015em;
+  margin-bottom: 0.2rem;
+  transition: color 0.2s ease-out;
 }
 
-.card-sub {
+.media-card:hover .card-title {
+  color: var(--accent-cyan);
+}
+
+.media-card .card-sub {
+  margin-top: 0.2rem;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  font-size: 0.64rem;
-  color: var(--text-dim);
+  gap: 0.45rem;
+  font-size: 0.74rem;
+  font-weight: 500;
+  color: #9ca3af;
 }
 
-/* Grid Layouts - Compact for Computer & Mobile */
+.media-card .card-sub span.dot {
+  color: #4b5563;
+  font-size: 0.65rem;
+}
+
+/* ==========================================================================
+   Top 10 Ranked Rail (Oversized background numerals 1-10)
+   ========================================================================== */
+.ranked-card-wrap {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+  padding-left: 28px;
+}
+
+.rank-number {
+  position: relative;
+  font-size: clamp(5.5rem, 8vw, 7.8rem);
+  font-family: var(--font-display);
+  font-weight: 900;
+  line-height: 0.72;
+  margin-right: -24px;
+  margin-bottom: 12px;
+  z-index: 3;
+  user-select: none;
+  pointer-events: none;
+  color: #0b0d13;
+  -webkit-text-stroke: 3px rgba(255, 255, 255, 0.35);
+  text-shadow: 0 10px 25px rgba(0, 0, 0, 0.9);
+  transition: transform 0.3s ease, -webkit-text-stroke-color 0.3s ease;
+}
+
+.ranked-card-wrap:hover .rank-number {
+  -webkit-text-stroke-color: var(--accent-cyan);
+  transform: translateX(-4px) scale(1.03);
+}
+
+@media (max-width: 768px) {
+  .ranked-card-wrap {
+    padding-left: 18px;
+  }
+  .rank-number {
+    font-size: 4.8rem;
+    margin-right: -18px;
+    margin-bottom: 8px;
+  }
+}
+
+/* Grid Layout for Movies, Series, Library, Search */
 .media-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(105px, 120px));
-  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fill, minmax(185px, 205px));
+  gap: 1.35rem;
   justify-content: start;
 }
 
 .media-grid .media-card {
-  flex: auto;
-  max-width: 125px;
+  width: 100%;
+  min-width: 0;
+  flex: none;
 }
 
 @media (max-width: 640px) {
   .media-grid {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 0.45rem;
-  }
-  .media-grid .media-card {
-    max-width: none;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.85rem;
   }
 }
 
