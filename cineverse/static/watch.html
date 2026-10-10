@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800;900&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="watch.css">
+  <link rel="stylesheet" href="watch.css?v=2.2">
 </head>
 <body>
 
@@ -302,11 +302,12 @@
          Cinema Video Player (Full Viewport Theater Mode)
          ====================================================================== -->
     <div class="player-container" id="player-container">
+      <iframe class="cinema-iframe" id="cinema-iframe" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen style="display:none;"></iframe>
       <video class="main-video" id="main-video" playsinline></video>
 
       <div class="player-controls-overlay" id="player-controls-overlay">
         <!-- Top Bar -->
-        <div class="player-top-bar">
+        <div class="player-top-bar" id="player-top-bar">
           <button class="player-back-btn" id="player-back-btn">
             <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2">
               <line x1="19" y1="12" x2="5" y2="12"></line>
@@ -315,7 +316,10 @@
             <span>Back to Browse</span>
           </button>
           <div class="player-title-display" id="player-title-display"></div>
-          <div style="width: 80px;"></div>
+          <div class="player-server-selector">
+            <button class="server-pill active" id="btn-srv-cloud" title="Fast Cloud Cinema Player (Direct CDN Stream)">⚡ Cloud HD</button>
+            <button class="server-pill" id="btn-srv-native" title="Native HTML5 Video Player">⚡ Direct MP4</button>
+          </div>
         </div>
 
         <!-- Center Play/Pause Large Action -->
@@ -480,6 +484,6 @@
 
   </div>
 
-  <script src="watch.js"></script>
+  <script src="watch.js?v=2.2"></script>
 </body>
 </html>

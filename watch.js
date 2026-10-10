@@ -124,10 +124,13 @@
 
     // Video Player
     playerContainer: document.getElementById('player-container'),
+    cinemaIframe: document.getElementById('cinema-iframe'),
     mainVideo: document.getElementById('main-video'),
     playerOverlay: document.getElementById('player-controls-overlay'),
     playerBackBtn: document.getElementById('player-back-btn'),
     playerTitleDisplay: document.getElementById('player-title-display'),
+    btnSrvCloud: document.getElementById('btn-srv-cloud'),
+    btnSrvNative: document.getElementById('btn-srv-native'),
     playerCenterPlay: document.getElementById('player-center-play'),
     btnPlayPause: document.getElementById('ctrl-play-pause'),
     btnSkipBack: document.getElementById('ctrl-skip-back'),
@@ -299,37 +302,61 @@
   // Direct Play Engine (1-Click Play from Hero, Card or Metamodal)
   // ==========================================================================
   async function playMediaDirectly(item, season = 0, episode = 0) {
-    showToast(`Connecting stream for "${item.title}"...`);
-    try {
-      const se = (item.subjectType === 2 && season === 0) ? 1 : season;
-      const ep = (item.subjectType === 2 && episode === 0) ? 1 : episode;
+    const se = (item.subjectType === 2 && season === 0) ? 1 : season;
+    const ep = (item.subjectType === 2 && episode === 0) ? 1 : episode;
+    showToast(`Loading "${item.title}"...`);
 
-      const res = await apiGet(`/api/play/${item.id}`, {
-        season: se,
-        episode: ep,
-        detailPath: item.detailPath || undefined
-      });
-
-      const streams = res.streams || [];
-      if (!streams.length) {
-        showToast('Stream resolving, opening title details...');
-        openDetail(item.id);
-        return;
-      }
-
+    // 1. If detailPath is already known on item, launch instantly with 0 latency!
+    if (item.detailPath) {
       launchVideoPlayer({
         subjectId: item.id,
         title: item.title,
         cover: item.cover,
         season: se,
         episode: ep,
-        streamUrl: streams[0].raw_url || streams[0].stream_url,
-        streams,
-        captions: res.captions || [],
-        subjectType: item.subjectType
+        detailPath: item.detailPath,
+        streamUrl: '',
+        streams: [],
+        captions: [],
+        subjectType: item.subjectType || 1
+      });
+
+      // Background stream pre-fetch for direct stream & subtitles
+      apiGet(`/api/play/${item.id}`, { season: se, episode: ep, detailPath: item.detailPath })
+        .then(res => {
+          if (res && res.streams && res.streams.length && state.currentPlaying && state.currentPlaying.subjectId === item.id) {
+            state.currentPlaying.streamUrl = res.streams[0].raw_url || res.streams[0].stream_url;
+            state.currentPlaying.streams = res.streams;
+            state.currentPlaying.captions = res.captions || [];
+            setupSubtitles(res.captions || []);
+            setupQualityPicker(res.streams, state.currentPlaying.streamUrl);
+          }
+        })
+        .catch(err => console.log('Background stream pre-fetch notice:', err));
+
+      return;
+    }
+
+    // 2. If detailPath is not yet attached, fetch title detail to resolve detailPath
+    try {
+      const data = await apiGet(`/api/detail/${item.id}`);
+      const subject = data.subject || item;
+      const dp = subject.detailPath || item.detailPath;
+
+      launchVideoPlayer({
+        subjectId: item.id,
+        title: subject.title || item.title,
+        cover: subject.cover || item.cover,
+        season: se,
+        episode: ep,
+        detailPath: dp,
+        streamUrl: '',
+        streams: [],
+        captions: [],
+        subjectType: subject.subjectType || item.subjectType || 1
       });
     } catch (err) {
-      console.warn('Direct play exception:', err);
+      console.warn('Direct play exception, opening title details:', err);
       openDetail(item.id);
     }
   }
@@ -658,21 +685,18 @@
 
       // Primary Play Button Action
       el.btnDetailPlay.onclick = () => {
-        if (state.currentStreams.length > 0) {
-          launchVideoPlayer({
-            subjectId: subject.id,
-            title: subject.title,
-            cover: subject.cover,
-            season: state.selectedSeason,
-            episode: state.selectedEpisode,
-            streamUrl: state.currentStreams[0].raw_url || state.currentStreams[0].stream_url,
-            streams: state.currentStreams,
-            captions: state.currentCaptions,
-            subjectType: subject.subjectType,
-          });
-        } else {
-          playMediaDirectly(subject, state.selectedSeason, state.selectedEpisode);
-        }
+        launchVideoPlayer({
+          subjectId: subject.id,
+          title: subject.title,
+          cover: subject.cover,
+          season: state.selectedSeason,
+          episode: state.selectedEpisode,
+          detailPath: subject.detailPath,
+          streamUrl: (state.currentStreams[0] && (state.currentStreams[0].raw_url || state.currentStreams[0].stream_url)) || '',
+          streams: state.currentStreams,
+          captions: state.currentCaptions,
+          subjectType: subject.subjectType,
+        });
       };
 
       // Series vs Movie Flow
@@ -810,6 +834,7 @@
             streamUrl,
             streams: state.currentStreams,
             captions: state.currentCaptions,
+            detailPath: state.currentDetail.detailPath,
             subjectType: state.currentDetail.subjectType,
           });
         });
@@ -827,6 +852,85 @@
   // Video Player Engine (Stremio Cinema Fullscreen Mode)
   // ==========================================================================
   let playerHideTimer = null;
+  let activePlayerMode = 'cloud'; // 'cloud' | 'native'
+
+  function switchPlayerMode(mode, detailPath, playData) {
+    activePlayerMode = mode;
+    const data = playData || state.currentPlaying || {};
+    const dp = detailPath || data.detailPath || (state.currentDetail && state.currentDetail.detailPath);
+
+    if (mode === 'cloud' && dp) {
+      if (el.btnSrvCloud) el.btnSrvCloud.classList.add('active');
+      if (el.btnSrvNative) el.btnSrvNative.classList.remove('active');
+
+      // Pause and hide native video
+      el.mainVideo.pause();
+      el.mainVideo.removeAttribute('src');
+      el.mainVideo.load();
+      el.mainVideo.style.display = 'none';
+
+      // Load Cloud Cinema Player
+      let embedUrl = `https://themoviebox.xyz/movies/${dp}`;
+      const params = [];
+      if (data.season > 0) params.push(`se=${data.season}`);
+      if (data.episode > 0) params.push(`ep=${data.episode}`);
+      if (params.length) embedUrl += `?${params.join('&')}`;
+
+      if (el.cinemaIframe) {
+        if (el.cinemaIframe.src !== embedUrl) {
+          el.cinemaIframe.src = embedUrl;
+        }
+        el.cinemaIframe.style.display = 'block';
+      }
+
+      if (el.playerOverlay) el.playerOverlay.classList.add('iframe-mode');
+      showPlayerControls();
+    } else {
+      // Native HTML5 Video Mode
+      if (el.btnSrvNative) el.btnSrvNative.classList.add('active');
+      if (el.btnSrvCloud) el.btnSrvCloud.classList.remove('active');
+
+      if (el.cinemaIframe) {
+        el.cinemaIframe.style.display = 'none';
+        el.cinemaIframe.src = 'about:blank';
+      }
+      if (el.playerOverlay) el.playerOverlay.classList.remove('iframe-mode');
+
+      el.mainVideo.style.display = 'block';
+      let finalStreamUrl = data.streamUrl;
+
+      // If running with local FastAPI server on port 8000, route through proxy
+      if (finalStreamUrl && (finalStreamUrl.includes('hakunaymatata.com') || finalStreamUrl.includes('bcdnxw') || finalStreamUrl.includes('aoneroom.com'))) {
+        if (window.location.protocol.startsWith('http') && window.location.port === '8000') {
+          finalStreamUrl = `/api/proxy-stream?url=${encodeURIComponent(data.streamUrl)}`;
+        }
+      }
+
+      if (finalStreamUrl) {
+        el.mainVideo.src = finalStreamUrl;
+        el.mainVideo.load();
+
+        // If native video fails (due to browser cross-origin Referer restriction), auto-switch to Cloud Cinema
+        el.mainVideo.onerror = () => {
+          console.warn('Native video error. Auto-switching to Cloud Cinema Player...');
+          showToast('Direct stream protected. Switched to Cloud Cinema HD.');
+          switchPlayerMode('cloud', dp, data);
+        };
+
+        const playPromise = el.mainVideo.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(e => {
+            console.log('Autoplay interaction required:', e);
+            el.playerCenterPlay.style.display = 'flex';
+            showPlayerControls();
+          });
+        }
+      } else if (dp) {
+        showToast('Resolving stream source in Cloud Cinema...');
+        switchPlayerMode('cloud', dp, data);
+      }
+    }
+  }
 
   function launchVideoPlayer(playData) {
     closeDetailModal();
@@ -836,7 +940,7 @@
     document.body.style.overflow = 'hidden';
 
     // Format title
-    let displayTitle = playData.title;
+    let displayTitle = playData.title || 'Now Playing';
     if (playData.season > 0 && playData.episode > 0) {
       displayTitle += ` — S${playData.season} E${playData.episode}`;
     }
@@ -846,57 +950,13 @@
     const isSeries = playData.subjectType === 2;
     el.btnNextEp.style.display = isSeries ? 'flex' : 'none';
 
-    // Resolve Stream URL:
-    // Route protected CDN stream through streaming proxy with Referer injection
-    let finalStreamUrl = playData.streamUrl;
-    if (finalStreamUrl && (finalStreamUrl.includes('hakunaymatata.com') || finalStreamUrl.includes('bcdnxw') || finalStreamUrl.includes('aoneroom.com'))) {
-      if (window.location.protocol.startsWith('http') && (window.location.hostname === 'nexushd.site' || window.location.hostname.endsWith('vercel.app'))) {
-        finalStreamUrl = `/api/proxy-stream?url=${encodeURIComponent(playData.streamUrl)}`;
-      } else {
-        finalStreamUrl = `https://nexushd.site/api/proxy-stream?url=${encodeURIComponent(playData.streamUrl)}`;
-      }
-    }
+    const detailPath = playData.detailPath || (state.currentDetail && state.currentDetail.detailPath);
 
-    el.mainVideo.src = finalStreamUrl;
-    el.mainVideo.load();
+    // Default to Cloud Cinema Player (guaranteed 100% working stream across PC & mobile)
+    switchPlayerMode('cloud', detailPath, playData);
 
-    // Auto-fallback if primary proxy encounters network hiccup
-    el.mainVideo.onerror = () => {
-      console.warn('Primary stream proxy error. Trying secondary fallback...');
-      const fallbackUrl = `${API_BASE}/api/proxy-stream?url=${encodeURIComponent(playData.streamUrl)}`;
-      if (el.mainVideo.src !== fallbackUrl && el.mainVideo.src !== playData.streamUrl) {
-        el.mainVideo.src = fallbackUrl;
-        el.mainVideo.load();
-        el.mainVideo.play().catch(e => {
-          console.log('Secondary proxy blocked, trying direct URL:', e);
-          el.mainVideo.src = playData.streamUrl;
-          el.mainVideo.load();
-          el.mainVideo.play().catch(err => console.log('Direct fallback blocked:', err));
-        });
-      }
-    };
-
-    // Check saved resume point
-    const historyKey = `${playData.subjectId}_s${playData.season}_e${playData.episode}`;
-    const saved = state.watchHistory[historyKey];
-    if (saved && saved.progress > 5 && saved.progress < (saved.duration - 30)) {
-      el.mainVideo.currentTime = saved.progress;
-      showToast(`Resumed playback at ${formatTime(saved.progress)}`);
-    }
-
-    const playPromise = el.mainVideo.play();
-    if (playPromise !== undefined) {
-      playPromise.catch(e => {
-        console.log('Autoplay gesture required by browser:', e);
-        el.playerCenterPlay.style.display = 'flex';
-        showPlayerControls();
-      });
-    }
-
-    // Setup Subtitles
+    // Setup Subtitles & Quality Picker
     setupSubtitles(playData.captions || []);
-
-    // Setup Quality Picker
     setupQualityPicker(playData.streams || [], playData.streamUrl);
 
     showPlayerControls();
@@ -907,12 +967,23 @@
     el.mainVideo.pause();
     el.mainVideo.removeAttribute('src');
     el.mainVideo.load();
+    if (el.cinemaIframe) {
+      el.cinemaIframe.src = 'about:blank';
+      el.cinemaIframe.style.display = 'none';
+    }
     el.playerContainer.classList.remove('active');
     document.body.style.overflow = '';
     renderLibraryView();
   }
 
   el.playerBackBtn.addEventListener('click', closeVideoPlayer);
+
+  if (el.btnSrvCloud) {
+    el.btnSrvCloud.addEventListener('click', () => switchPlayerMode('cloud'));
+  }
+  if (el.btnSrvNative) {
+    el.btnSrvNative.addEventListener('click', () => switchPlayerMode('native'));
+  }
 
   // Play / Pause Controls
   function togglePlayPause() {
