@@ -631,6 +631,27 @@ async def debug_stream(url: str):
     return info
 
 
+@app.get("/api/test-cdn-edge")
+def test_cdn_edge(url: str):
+    import requests as req_lib
+    res = {}
+    uas = [
+        ("chrome", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"),
+        ("okhttp", "okhttp/4.12.0"),
+        ("exoplayer", "ExoPlayerLib/2.19.1 (Linux;Android 14) ExoPlayerLib/2.19.1"),
+        ("moviebox", "MovieBox/3.6.1 (Android; 14)"),
+        ("curl", "curl/8.5.0")
+    ]
+    for name, ua in uas:
+        try:
+            h = {"User-Agent": ua, "Referer": "https://movie-box.co/", "Range": "bytes=0-100"}
+            r = req_lib.get(url, headers=h, timeout=8)
+            res[name] = {"status": r.status_code, "server": r.headers.get("server"), "len": len(r.content)}
+        except Exception as e:
+            res[name] = str(e)
+    return res
+
+
 @app.get("/api/proxy-subtitle")
 async def proxy_subtitle(request: Request, url: Optional[str] = None):
     """Fetches SRT subtitles from CDN, converts them to standard WebVTT format,
