@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800;900&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="watch.css?v=3.0">
+  <link rel="stylesheet" href="watch.css?v=3.1">
 </head>
 <body>
 
@@ -302,8 +302,7 @@
          Cinema Video Player (Full Viewport Theater Mode)
          ====================================================================== -->
     <div class="player-container" id="player-container">
-      <iframe class="cinema-iframe" id="cinema-iframe" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen style="display:none;"></iframe>
-      <video class="main-video" id="main-video" playsinline></video>
+      <video class="main-video" id="main-video" playsinline crossorigin="anonymous"></video>
 
       <div class="player-controls-overlay" id="player-controls-overlay">
         <!-- Top Bar -->
@@ -317,8 +316,7 @@
           </button>
           <div class="player-title-display" id="player-title-display"></div>
           <div class="player-server-selector">
-            <button class="server-pill active" id="btn-srv-cloud" title="Fast Cloud Cinema Player (Direct CDN Stream)">⚡ Cloud HD</button>
-            <button class="server-pill" id="btn-srv-native" title="Native HTML5 Video Player">⚡ Direct MP4</button>
+            <span class="server-pill active" id="player-backend-badge" title="Streaming via Nexus Backend API">⚡ Nexus Backend</span>
           </div>
         </div>
 
@@ -484,6 +482,6 @@
 
   </div>
 
-  <script src="watch.js?v=3.0"></script>
+  <script src="watch.js?v=3.1"></script>
 </body>
 </html>
