@@ -241,6 +241,12 @@
           <div class="detail-poster-col">
             <img class="detail-poster-img" id="detail-poster-img" src="" alt="Poster">
             <div class="detail-action-buttons">
+              <button class="btn-detail-play" id="btn-detail-play">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                  <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                </svg>
+                <span id="btn-detail-play-text">Watch Now</span>
+              </button>
               <button class="btn-watchlist" id="btn-detail-watchlist">
                 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
@@ -296,7 +302,7 @@
          Cinema Video Player (Full Viewport Theater Mode)
          ====================================================================== -->
     <div class="player-container" id="player-container">
-      <video class="main-video" id="main-video" playsinline crossorigin="anonymous"></video>
+      <video class="main-video" id="main-video" playsinline></video>
 
       <div class="player-controls-overlay" id="player-controls-overlay">
         <!-- Top Bar -->

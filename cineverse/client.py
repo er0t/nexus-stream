@@ -132,16 +132,44 @@ class MovieBoxClient:
         self,
         keyword: str,
         page: int = 1,
-        page_size: int = 24,
+        page_size: int = 30,
         subject_type: Optional[int] = None,
     ) -> Dict[str, Any]:
-        """Searches titles by keyword.
-        subject_type: 1 = Movie, 2 = TV Series, None = All/Unfiltered
-        """
-        payload = {"keyword": keyword, "pageNum": page, "pageSize": page_size}
+        """Searches titles by keyword with correct headers and payload format."""
+        payload: Dict[str, Any] = {"keyword": keyword, "page": page, "perPage": page_size}
         if subject_type is not None:
             payload["subjectType"] = subject_type
-        res = self._auth_request("POST", "/subject/search", json_data=payload)
+
+        token = self.bootstrap()
+        headers = {
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+            "Origin": self.REFERER_BASE,
+            "Referer": f"{self.REFERER_BASE}/",
+            "User-Agent": (
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                "AppleWebKit/537.36 (KHTML, like Gecko) "
+                "Chrome/124.0.0.0 Safari/537.36"
+            ),
+            "Authorization": f"Bearer {token}",
+            "X-Client-Info": json.dumps({"timezone": "UTC"}),
+            "X-Request-Lang": "en",
+        }
+        res = self.session.post(
+            f"{self.BASE_URL}/subject/search",
+            headers=headers,
+            json=payload,
+            timeout=self.timeout,
+        )
+        if res.status_code in (401, 403):
+            token = self.bootstrap(force=True)
+            headers["Authorization"] = f"Bearer {token}"
+            res = self.session.post(
+                f"{self.BASE_URL}/subject/search",
+                headers=headers,
+                json=payload,
+                timeout=self.timeout,
+            )
         res.raise_for_status()
         return res.json()
 

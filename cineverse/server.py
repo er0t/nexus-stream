@@ -528,12 +528,16 @@ async def proxy_stream(request: Request, url: Optional[str] = None):
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
         "Referer": "https://movie-box.co/",
         "Origin": "https://movie-box.co",
+        "Accept": "*/*",
+        "Sec-Fetch-Dest": "video",
+        "Sec-Fetch-Mode": "cors",
+        "Sec-Fetch-Site": "cross-site",
     }
     range_header = request.headers.get("range")
     if range_header:
         req_headers["range"] = range_header
 
-    client = httpx.AsyncClient(timeout=30.0, follow_redirects=True)
+    client = httpx.AsyncClient(http2=True, timeout=30.0, follow_redirects=True)
     try:
         upstream_req = client.build_request("GET", target_url, headers=req_headers)
         upstream_res = await client.send(upstream_req, stream=True)

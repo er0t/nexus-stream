@@ -1,5 +1,6 @@
 /**
- * Nexus Web — Stremio-Inspired Minimalist Streaming Client
+ * Nexus Web — Minimalist Cinema & Series Streaming Client
+ * Mobile App Color Identity: Midnight Navy, Sky Cyan (#38BDF8) & Sapphire Blue (#2563EB)
  * Connects to live backend API (https://nexus-backend-71wf.onrender.com)
  */
 
@@ -14,10 +15,16 @@
   function getApiBase() {
     const saved = localStorage.getItem('nexus_api_endpoint');
     if (saved) return saved.replace(/\/+$/, '');
-    if (window.location.protocol.startsWith('http') && 
-       (window.location.port === '8000' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
-      return window.location.origin;
+    // If the page itself is served directly by the local FastAPI backend on port 8000 or on Render
+    if (window.location.protocol.startsWith('http')) {
+      if (window.location.port === '8000') {
+        return window.location.origin;
+      }
+      if (window.location.hostname.includes('onrender.com')) {
+        return window.location.origin;
+      }
     }
+    // Default to the production backend for localhost dev servers (port 3000, 5500, etc.) and Vercel/custom domains
     return DEFAULT_API;
   }
 
@@ -54,13 +61,13 @@
     btnGetApps: document.getElementById('btn-get-apps'),
     btnSettings: document.getElementById('btn-settings'),
     serverStatusBadge: document.getElementById('server-status-badge'),
-    
+
     // Top Bar & Filters
     searchInput: document.getElementById('search-input'),
     searchClearBtn: document.getElementById('search-clear-btn'),
     filtersBar: document.getElementById('filters-bar'),
     filterChips: document.querySelectorAll('.filter-chip'),
-    
+
     // View Sections
     views: {
       discover: document.getElementById('view-discover'),
@@ -69,7 +76,7 @@
       library: document.getElementById('view-library'),
       search: document.getElementById('view-search'),
     },
-    
+
     // Discover Hero
     heroBanner: document.getElementById('hero-banner'),
     heroBackdrop: document.getElementById('hero-backdrop'),
@@ -82,7 +89,7 @@
     heroOverview: document.getElementById('hero-overview'),
     btnHeroPlay: document.getElementById('btn-hero-play'),
     btnHeroList: document.getElementById('btn-hero-list'),
-    
+
     // Catalog Containers
     discoverSections: document.getElementById('discover-sections'),
     moviesGrid: document.getElementById('movies-grid'),
@@ -98,6 +105,8 @@
     modalCloseBtn: document.getElementById('modal-close-btn'),
     detailBackdropImg: document.getElementById('detail-backdrop-img'),
     detailPosterImg: document.getElementById('detail-poster-img'),
+    btnDetailPlay: document.getElementById('btn-detail-play'),
+    btnDetailPlayText: document.getElementById('btn-detail-play-text'),
     btnDetailWatchlist: document.getElementById('btn-detail-watchlist'),
     detailTitle: document.getElementById('detail-title'),
     detailScore: document.getElementById('detail-score'),
@@ -158,7 +167,7 @@
     const toast = document.createElement('div');
     toast.className = 'toast-msg';
     toast.innerHTML = `
-      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--accent-cyan)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="12" cy="12" r="10"></circle>
         <line x1="12" y1="16" x2="12" y2="12"></line>
         <line x1="12" y1="8" x2="12.01" y2="8"></line>
@@ -219,7 +228,7 @@
       if (viewEl) viewEl.classList.toggle('active', name === tabName);
     });
 
-    // Control filter bar visibility (only on Discover, Movies, Series)
+    // Filter chips only shown on discover, movies, series
     if (el.filtersBar) {
       el.filtersBar.style.display = (tabName === 'discover' || tabName === 'movies' || tabName === 'series') ? 'flex' : 'none';
     }
@@ -247,19 +256,19 @@
     const typeLabel = isSeries ? 'Series' : 'Movie';
     const year = (item.releaseDate || '').substring(0, 4) || '2024';
     const score = item.score || '8.4';
-    const coverUrl = item.cover || 'https://via.placeholder.com/300x450/141322/7c5cfc?text=Nexus';
+    const coverUrl = item.cover || 'https://via.placeholder.com/300x450/0a142a/38bdf8?text=Nexus';
 
     card.innerHTML = `
       <div class="poster-box">
-        <img class="poster-img" src="${coverUrl}" alt="${escapeHtml(item.title)}" loading="lazy" onerror="this.src='https://via.placeholder.com/300x450/141322/7c5cfc?text=Nexus'">
+        <img class="poster-img" src="${coverUrl}" alt="${escapeHtml(item.title)}" loading="lazy" onerror="this.src='https://via.placeholder.com/300x450/0a142a/38bdf8?text=Nexus'">
         <div class="card-badge-top-left">${typeLabel}</div>
         <div class="card-badge-top-right">
           <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
           <span>${score}</span>
         </div>
         <div class="card-play-overlay">
-          <div class="play-circle">
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+          <div class="play-circle" title="Play">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
               <polygon points="5 3 19 12 5 21 5 3"></polygon>
             </svg>
           </div>
@@ -274,8 +283,55 @@
       </div>
     `;
 
-    card.addEventListener('click', () => openDetail(item.id));
+    card.addEventListener('click', (e) => {
+      if (e.target.closest('.play-circle')) {
+        e.stopPropagation();
+        playMediaDirectly(item);
+      } else {
+        openDetail(item.id);
+      }
+    });
+
     return card;
+  }
+
+  // ==========================================================================
+  // Direct Play Engine (1-Click Play from Hero, Card or Metamodal)
+  // ==========================================================================
+  async function playMediaDirectly(item, season = 0, episode = 0) {
+    showToast(`Connecting stream for "${item.title}"...`);
+    try {
+      const se = (item.subjectType === 2 && season === 0) ? 1 : season;
+      const ep = (item.subjectType === 2 && episode === 0) ? 1 : episode;
+
+      const res = await apiGet(`/api/play/${item.id}`, {
+        season: se,
+        episode: ep,
+        detailPath: item.detailPath || undefined
+      });
+
+      const streams = res.streams || [];
+      if (!streams.length) {
+        showToast('Stream resolving, opening title details...');
+        openDetail(item.id);
+        return;
+      }
+
+      launchVideoPlayer({
+        subjectId: item.id,
+        title: item.title,
+        cover: item.cover,
+        season: se,
+        episode: ep,
+        streamUrl: streams[0].raw_url || streams[0].stream_url,
+        streams,
+        captions: res.captions || [],
+        subjectType: item.subjectType
+      });
+    } catch (err) {
+      console.warn('Direct play exception:', err);
+      openDetail(item.id);
+    }
   }
 
   // ==========================================================================
@@ -295,7 +351,7 @@
         setupHeroShowcase();
       }
 
-      // 2. Render Sections Carousels
+      // 2. Render Sections Carousels with smooth scroll arrows
       renderDiscoverSections(data.sections || []);
 
     } catch (err) {
@@ -337,7 +393,8 @@
     el.heroGenre.textContent = item.genre || 'Action, Drama';
     el.heroOverview.textContent = item.description || `Stream ${item.title} in crystal-clear high definition with multi-language audio and zero mid-roll interruptions.`;
 
-    el.btnHeroPlay.onclick = () => openDetail(item.id);
+    // Direct 1-Click Play on Hero button!
+    el.btnHeroPlay.onclick = () => playMediaDirectly(item);
     el.btnHeroList.onclick = () => toggleWatchlist(item);
   }
 
@@ -356,11 +413,32 @@
           <h2 class="section-title">${escapeHtml(sec.title)}</h2>
         </div>
         <div class="carousel-wrap">
+          <button class="carousel-arrow prev" title="Previous">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+          </button>
           <div class="cards-carousel"></div>
+          <button class="carousel-arrow next" title="Next">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </button>
         </div>
       `;
 
       const carousel = secEl.querySelector('.cards-carousel');
+      const prevBtn = secEl.querySelector('.carousel-arrow.prev');
+      const nextBtn = secEl.querySelector('.carousel-arrow.next');
+
+      prevBtn.addEventListener('click', () => {
+        carousel.scrollBy({ left: -carousel.clientWidth, behavior: 'smooth' });
+      });
+
+      nextBtn.addEventListener('click', () => {
+        carousel.scrollBy({ left: carousel.clientWidth, behavior: 'smooth' });
+      });
+
       items.forEach(item => {
         carousel.appendChild(createMediaCard(item));
       });
@@ -419,7 +497,7 @@
   }
 
   // ==========================================================================
-  // Instant Search System
+  // Comprehensive Search System (Upstream + Catalog Merge)
   // ==========================================================================
   el.searchInput.addEventListener('input', (e) => {
     const query = e.target.value.trim();
@@ -433,7 +511,7 @@
 
     state.searchDebounce = setTimeout(() => {
       executeSearch(query);
-    }, 300);
+    }, 280);
   });
 
   el.searchClearBtn.addEventListener('click', () => {
@@ -451,59 +529,74 @@
       </div>
     `;
 
-    let items = [];
+    const seen = new Set();
+    const mergedResults = [];
+
+    // 1. Upstream Backend API Search
     try {
       const res = await apiGet('/api/search', { q: query, pageSize: 40 });
-      items = res.items || [];
+      (res.items || []).forEach(it => {
+        const sid = String(it.id);
+        if (sid && !seen.has(sid)) {
+          seen.add(sid);
+          mergedResults.push(it);
+        }
+      });
     } catch (err) {
       console.warn('Backend search notice:', err);
     }
 
-    // Smart Catalog Fallback if backend returned 0 or during network hiccup
-    if (!items.length && state.homeData) {
-      const qLow = query.toLowerCase();
-      const seen = new Set();
+    // 2. Comprehensive in-catalog search to guarantee all catalog movies/shows are found
+    if (state.homeData) {
+      const qLow = query.toLowerCase().trim();
+      const tokens = qLow.split(/\s+/).filter(Boolean);
       (state.homeData.sections || []).forEach(sec => {
         (sec.items || []).forEach(it => {
-          if (!seen.has(it.id)) {
+          const sid = String(it.id);
+          if (sid && !seen.has(sid)) {
             const t = (it.title || '').toLowerCase();
             const g = (it.genre || '').toLowerCase();
-            if (t.includes(qLow) || g.includes(qLow)) {
-              seen.add(it.id);
-              items.push(it);
+            const d = (it.description || '').toLowerCase();
+            const matches = tokens.length ? tokens.every(tok => t.includes(tok) || g.includes(tok) || d.includes(tok)) : false;
+            if (matches || t.includes(qLow) || g.includes(qLow)) {
+              seen.add(sid);
+              mergedResults.push(it);
             }
           }
         });
       });
       (state.heroItems || []).forEach(it => {
-        if (!seen.has(it.id)) {
+        const sid = String(it.id);
+        if (sid && !seen.has(sid)) {
           const t = (it.title || '').toLowerCase();
-          if (t.includes(qLow)) {
-            seen.add(it.id);
-            items.push(it);
+          const d = (it.description || '').toLowerCase();
+          const matches = tokens.length ? tokens.every(tok => t.includes(tok) || d.includes(tok)) : false;
+          if (matches || t.includes(qLow)) {
+            seen.add(sid);
+            mergedResults.push(it);
           }
         }
       });
     }
 
-    if (!items.length) {
+    if (!mergedResults.length) {
       el.searchResultsGrid.innerHTML = `
         <div style="grid-column: 1 / -1; text-align: center; padding: 4rem 1rem;">
-          <h3 style="font-size: 1.2rem; margin-bottom: 0.5rem;">No results found for "${escapeHtml(query)}"</h3>
-          <p style="color: var(--text-dim);">Try checking the spelling or searching for a different actor or title.</p>
+          <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem; color: #fff;">No titles found for "${escapeHtml(query)}"</h3>
+          <p style="color: var(--text-dim);">Try searching with fewer words, or browse popular titles in Discover.</p>
         </div>
       `;
       return;
     }
 
     el.searchResultsGrid.innerHTML = '';
-    items.forEach(item => {
+    mergedResults.forEach(item => {
       el.searchResultsGrid.appendChild(createMediaCard(item));
     });
   }
 
   // ==========================================================================
-  // Detail Metamodal (Stremio Signature Split Layout)
+  // Detail Metamodal (Desktop Cinema Enhanced)
   // ==========================================================================
   async function openDetail(subjectId) {
     el.modalOverlay.classList.add('active');
@@ -511,11 +604,12 @@
 
     // Reset fields
     el.detailTitle.textContent = 'Loading...';
-    el.detailSynopsis.textContent = 'Fetching metadata and stream availability...';
+    el.detailSynopsis.textContent = 'Fetching metadata and stream sources...';
     el.detailGenres.innerHTML = '';
     el.detailCastRow.innerHTML = '';
     el.seriesSection.style.display = 'none';
-    el.streamsList.innerHTML = `<div style="color: var(--text-dim); padding: 0.5rem;">Resolving high-speed streams...</div>`;
+    el.streamsList.innerHTML = `<div style="color: var(--text-dim); padding: 0.5rem;">Resolving available streams...</div>`;
+    el.btnDetailPlayText.textContent = 'Watch Now';
 
     try {
       const data = await apiGet(`/api/detail/${subjectId}`);
@@ -562,13 +656,33 @@
       updateWatchlistBtnState(subject.id);
       el.btnDetailWatchlist.onclick = () => toggleWatchlist(subject);
 
+      // Primary Play Button Action
+      el.btnDetailPlay.onclick = () => {
+        if (state.currentStreams.length > 0) {
+          launchVideoPlayer({
+            subjectId: subject.id,
+            title: subject.title,
+            cover: subject.cover,
+            season: state.selectedSeason,
+            episode: state.selectedEpisode,
+            streamUrl: state.currentStreams[0].raw_url || state.currentStreams[0].stream_url,
+            streams: state.currentStreams,
+            captions: state.currentCaptions,
+            subjectType: subject.subjectType,
+          });
+        } else {
+          playMediaDirectly(subject, state.selectedSeason, state.selectedEpisode);
+        }
+      };
+
       // Series vs Movie Flow
       if (subject.subjectType === 2 && seasons.length > 0) {
         el.seriesSection.style.display = 'flex';
+        el.btnDetailPlayText.textContent = `Watch S${seasons[0].season} E1`;
         renderSeasonPicker(seasons, subject.id);
       } else {
-        // Single Movie
         el.seriesSection.style.display = 'none';
+        el.btnDetailPlayText.textContent = 'Watch Movie';
         state.selectedSeason = 0;
         state.selectedEpisode = 0;
         fetchStreamsForMedia(subject.id, 0, 0, subject.detailPath);
@@ -577,7 +691,7 @@
     } catch (err) {
       console.error('Failed to load detail:', err);
       el.detailSynopsis.textContent = 'Could not load details for this title. Please try again.';
-      el.streamsList.innerHTML = `<div style="color: var(--accent-danger);">Stream sources unavailable.</div>`;
+      el.streamsList.innerHTML = `<div style="color: var(--accent-crimson);">Stream sources unavailable.</div>`;
     }
   }
 
@@ -621,7 +735,7 @@
       card.className = `episode-card ${idx === 0 ? 'active' : ''}`;
       card.innerHTML = `
         <div class="episode-title">${ep.episode}. ${escapeHtml(ep.title || `Episode ${ep.episode}`)}</div>
-        <svg viewBox="0 0 24 24" width="16" height="16" fill="var(--accent-primary)">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="var(--accent-cyan)">
           <polygon points="5 3 19 12 5 21 5 3"></polygon>
         </svg>
       `;
@@ -630,13 +744,13 @@
         el.episodesGrid.querySelectorAll('.episode-card').forEach(c => c.classList.remove('active'));
         card.classList.add('active');
         state.selectedEpisode = ep.episode;
+        el.btnDetailPlayText.textContent = `Watch S${seasonNum} E${ep.episode}`;
         fetchStreamsForMedia(subjectId, seasonNum, ep.episode, state.currentDetail.detailPath);
       });
 
       el.episodesGrid.appendChild(card);
     });
 
-    // Automatically load streams for the first episode
     if (episodes.length > 0) {
       fetchStreamsForMedia(subjectId, seasonNum, episodes[0].episode, state.currentDetail.detailPath);
     }
@@ -705,7 +819,7 @@
 
     } catch (err) {
       console.error('Playback resolution error:', err);
-      el.streamsList.innerHTML = `<div style="color: var(--accent-danger);">Could not resolve stream source.</div>`;
+      el.streamsList.innerHTML = `<div style="color: var(--accent-crimson);">Could not resolve stream source.</div>`;
     }
   }
 
@@ -732,14 +846,25 @@
     const isSeries = playData.subjectType === 2;
     el.btnNextEp.style.display = isSeries ? 'flex' : 'none';
 
-    // Resolve Stream Source URL:
-    // When playing in browser, route protected CDN streams via /api/proxy-stream with Referer injection
+    // Resolve Stream URL:
+    // Route protected CDN stream through /api/proxy-stream with HTTP/2 and Referer injection
     let finalStreamUrl = playData.streamUrl;
     if (finalStreamUrl.includes('hakunaymatata.com') || finalStreamUrl.includes('bcdnxw') || finalStreamUrl.includes('aoneroom.com')) {
       finalStreamUrl = `${API_BASE}/api/proxy-stream?url=${encodeURIComponent(playData.streamUrl)}`;
     }
+
     el.mainVideo.src = finalStreamUrl;
     el.mainVideo.load();
+
+    // Auto-fallback if proxy or browser encounters network hiccup
+    el.mainVideo.onerror = () => {
+      console.warn('Video element error. Trying direct URL fallback...');
+      if (el.mainVideo.src !== playData.streamUrl) {
+        el.mainVideo.src = playData.streamUrl;
+        el.mainVideo.load();
+        el.mainVideo.play().catch(e => console.log('Direct fallback blocked:', e));
+      }
+    };
 
     // Check saved resume point
     const historyKey = `${playData.subjectId}_s${playData.season}_e${playData.episode}`;
@@ -749,9 +874,9 @@
       showToast(`Resumed playback at ${formatTime(saved.progress)}`);
     }
 
-    el.mainVideo.play().catch(e => console.log('Autoplay prevented:', e));
+    el.mainVideo.play().catch(e => console.log('Autoplay notice:', e));
 
-    // Inject Subtitles if available
+    // Setup Subtitles
     setupSubtitles(playData.captions || []);
 
     // Setup Quality Picker
@@ -895,13 +1020,11 @@
 
   // Subtitles Integration (WebVTT from backend proxy)
   function setupSubtitles(captions) {
-    // Clear existing text tracks
     while (el.mainVideo.firstChild) {
       el.mainVideo.removeChild(el.mainVideo.firstChild);
     }
     el.menuSubtitles.innerHTML = '';
 
-    // "Off" option
     const offBtn = document.createElement('button');
     offBtn.className = 'menu-item active';
     offBtn.textContent = 'Off';
@@ -955,13 +1078,17 @@
 
       btn.addEventListener('click', () => {
         const curTime = el.mainVideo.currentTime;
-        el.mainVideo.src = s.raw_url || s.stream_url;
+        let url = s.raw_url || s.stream_url;
+        if (url.includes('hakunaymatata.com') || url.includes('bcdnxw') || url.includes('aoneroom.com')) {
+          url = `${API_BASE}/api/proxy-stream?url=${encodeURIComponent(url)}`;
+        }
+        el.mainVideo.src = url;
         el.mainVideo.currentTime = curTime;
         el.mainVideo.play();
         el.menuQuality.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
         btn.classList.add('active');
         el.menuQuality.classList.remove('active');
-        showToast(`Switched to ${s.resolution || 'Stream'}`);
+        showToast(`Switched to Server ${idx + 1}`);
       });
 
       el.menuQuality.appendChild(btn);
@@ -1046,7 +1173,7 @@
     }
   });
 
-  // Save Playback Progress for Continue Watching
+  // Save Playback Progress
   setInterval(savePlaybackProgress, 5000);
 
   function savePlaybackProgress() {
@@ -1075,7 +1202,6 @@
   // Library View (Continue Watching & Watchlist)
   // ==========================================================================
   function renderLibraryView() {
-    // 1. Continue Watching
     const historyItems = Object.values(state.watchHistory)
       .sort((a, b) => b.timestamp - a.timestamp)
       .filter(i => i.progress < (i.duration - 20));
@@ -1086,20 +1212,18 @@
     } else {
       historyItems.slice(0, 12).forEach(item => {
         const card = createMediaCard(item);
-        // Add progress bar overlay
         const pct = Math.round((item.progress / item.duration) * 100);
         const bar = document.createElement('div');
         bar.style.cssText = `
           position: absolute; bottom: 0; left: 0; right: 0; height: 4px;
           background: rgba(255,255,255,0.2); z-index: 5;
         `;
-        bar.innerHTML = `<div style="height:100%;width:${pct}%;background:var(--accent-primary)"></div>`;
+        bar.innerHTML = `<div style="height:100%;width:${pct}%;background:var(--accent-cyan)"></div>`;
         card.querySelector('.poster-box').appendChild(bar);
         el.libraryContinueGrid.appendChild(card);
       });
     }
 
-    // 2. Watchlist
     el.libraryWatchlistGrid.innerHTML = '';
     if (!state.watchlist.length) {
       el.libraryWatchlistGrid.innerHTML = `<div style="color: var(--text-dim); padding: 1rem;">Your watchlist is currently empty.</div>`;
@@ -1177,7 +1301,7 @@
     if (val) {
       localStorage.setItem('nexus_api_endpoint', val);
       API_BASE = val;
-      showToast('Endpoint saved! Reloading feed...');
+      showToast('Endpoint saved! Connecting...');
       el.settingsModal.classList.remove('active');
       loadHomeFeed();
     }
