@@ -1,6 +1,7 @@
 {
   "cleanUrls": true,
   "redirects": [
+    { "source": "/watch", "destination": "/watch.html", "permanent": false },
     { "source": "/vpn", "destination": "/vpn.html", "permanent": false },
     { "source": "/beta", "destination": "/NexusTV-Beta.apk", "permanent": false },
     { "source": "/b", "destination": "/NexusTV-Beta.apk", "permanent": false },

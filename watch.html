@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Nexus Web — Minimalist Cinema & Series Streaming</title>
+  <meta name="description" content="Watch high-definition movies and TV series directly in your browser. Stremio-inspired, ultra-clean interface with multi-language subtitles and zero mid-roll interruptions.">
+  <meta name="theme-color" content="#0b0a12">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="icon" type="image/png" href="./assets/logo.png">
+
+  <!-- Google Fonts: Outfit (Display) & Inter (Body) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="watch.css">
+</head>
+<body>
+
+  <div class="app-container">
+
+    <!-- ======================================================================
+         Left Navigation Rail (Stremio Signature Sidebar)
+         ====================================================================== -->
+    <aside class="nav-sidebar" id="nav-sidebar">
+      <div class="brand-icon-wrap" id="brand-icon-btn" title="Nexus Home">
+        <img src="./assets/logo.png" alt="Nexus Logo" onerror="this.src='https://via.placeholder.com/48/7c5cfc/fff?text=N'">
+      </div>
+
+      <nav class="nav-menu">
+        <button class="nav-item active" data-tab="discover" data-tooltip="Discover" id="nav-discover">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+          </svg>
+        </button>
+
+        <button class="nav-item" data-tab="movies" data-tooltip="Movies" id="nav-movies">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect>
+            <line x1="7" y1="2" x2="7" y2="22"></line>
+            <line x1="17" y1="2" x2="17" y2="22"></line>
+            <line x1="2" y1="12" x2="22" y2="12"></line>
+            <line x1="2" y1="7" x2="7" y2="7"></line>
+            <line x1="2" y1="17" x2="7" y2="17"></line>
+            <line x1="17" y1="17" x2="22" y2="17"></line>
+            <line x1="17" y1="7" x2="22" y2="7"></line>
+          </svg>
+        </button>
+
+        <button class="nav-item" data-tab="series" data-tooltip="Series" id="nav-series">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="7" width="20" height="15" rx="2" ry="2"></rect>
+            <polyline points="17 2 12 7 7 2"></polyline>
+          </svg>
+        </button>
+
+        <button class="nav-item" data-tab="library" data-tooltip="My Library" id="nav-library">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+          </svg>
+        </button>
+      </nav>
+
+      <div class="nav-footer">
+        <button class="nav-item" data-tooltip="Settings" id="btn-settings">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+        </button>
+      </div>
+    </aside>
+
+    <!-- ======================================================================
+         Main Layout: Top Bar + Views
+         ====================================================================== -->
+    <main class="main-wrapper">
+
+      <!-- Top Header Bar -->
+      <header class="top-bar">
+        <div class="top-bar-left">
+          <div class="search-box">
+            <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input type="text" class="search-input" id="search-input" placeholder="Search movies, TV shows, actors... (Press /)" autocomplete="off">
+            <button class="search-clear-btn" id="search-clear-btn" title="Clear">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="top-bar-right">
+          <div class="badge-server-status" id="server-status-badge" title="Backend Status">
+            <span class="status-pulse"></span>
+            <span>Online</span>
+          </div>
+          <button class="btn-get-apps" id="btn-get-apps">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            <span>Get Apps</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Horizontal Genre Filter Bar -->
+      <nav class="filters-bar" id="filters-bar">
+        <button class="filter-chip active" data-genre="all">All Genres</button>
+        <button class="filter-chip" data-genre="action">Action</button>
+        <button class="filter-chip" data-genre="sci-fi">Sci-Fi</button>
+        <button class="filter-chip" data-genre="drama">Drama</button>
+        <button class="filter-chip" data-genre="comedy">Comedy</button>
+        <button class="filter-chip" data-genre="thriller">Thriller</button>
+        <button class="filter-chip" data-genre="horror">Horror</button>
+        <button class="filter-chip" data-genre="animation">Animation</button>
+        <button class="filter-chip" data-genre="adventure">Adventure</button>
+        <button class="filter-chip" data-genre="crime">Crime</button>
+      </nav>
+
+      <!-- Views Container -->
+      <div class="views-container">
+
+        <!-- VIEW 1: DISCOVER -->
+        <section class="view-section active" id="view-discover">
+          <!-- Featured Cinematic Hero Showcase -->
+          <div class="hero-banner" id="hero-banner">
+            <img class="hero-backdrop" id="hero-backdrop" src="" alt="Featured Showcase">
+            <div class="hero-overlay"></div>
+            <div class="hero-content">
+              <div class="hero-tag-row">
+                <span class="tag-badge" id="hero-tag">FEATURED</span>
+                <span class="rating-pill" id="hero-rating">
+                  <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                  <span>8.8</span>
+                </span>
+              </div>
+              <h1 class="hero-title" id="hero-title">Loading Featured...</h1>
+              <div class="hero-meta">
+                <span id="hero-year">2024</span>
+                <span class="dot"></span>
+                <span id="hero-duration">2h 10m</span>
+                <span class="dot"></span>
+                <span id="hero-genre">Action, Sci-Fi</span>
+              </div>
+              <p class="hero-overview" id="hero-overview"></p>
+              <div class="hero-buttons">
+                <button class="btn-primary" id="btn-hero-play">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                  </svg>
+                  <span>Watch Now</span>
+                </button>
+                <button class="btn-secondary" id="btn-hero-list">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+                  </svg>
+                  <span>+ My List</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dynamic Horizontal Sections -->
+          <div id="discover-sections"></div>
+        </section>
+
+        <!-- VIEW 2: MOVIES -->
+        <section class="view-section" id="view-movies">
+          <div class="section-header">
+            <h2 class="section-title">All Movies</h2>
+          </div>
+          <div class="media-grid" id="movies-grid"></div>
+        </section>
+
+        <!-- VIEW 3: SERIES -->
+        <section class="view-section" id="view-series">
+          <div class="section-header">
+            <h2 class="section-title">TV Series & Shows</h2>
+          </div>
+          <div class="media-grid" id="series-grid"></div>
+        </section>
+
+        <!-- VIEW 4: MY LIBRARY -->
+        <section class="view-section" id="view-library">
+          <div class="catalog-section">
+            <div class="section-header">
+              <h2 class="section-title">Continue Watching</h2>
+            </div>
+            <div class="media-grid" id="library-continue-grid"></div>
+          </div>
+
+          <div class="catalog-section" style="margin-top: 2.5rem;">
+            <div class="section-header">
+              <h2 class="section-title">My Watchlist</h2>
+            </div>
+            <div class="media-grid" id="library-watchlist-grid"></div>
+          </div>
+        </section>
+
+        <!-- VIEW 5: SEARCH RESULTS -->
+        <section class="view-section" id="view-search">
+          <div class="section-header">
+            <h2 class="section-title">Results for <span id="search-query-label"></span></h2>
+          </div>
+          <div class="media-grid" id="search-results-grid"></div>
+        </section>
+
+      </div>
+    </main>
+
+    <!-- ======================================================================
+         Stremio-Inspired Metamodal / Detail Dialog
+         ====================================================================== -->
+    <div class="modal-overlay" id="detail-modal-overlay">
+      <div class="detail-modal" id="detail-modal">
+        <button class="modal-close-btn" id="modal-close-btn" title="Close">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+
+        <!-- Cinematic Backdrop Header -->
+        <div class="detail-backdrop-header">
+          <img class="detail-backdrop-img" id="detail-backdrop-img" src="" alt="Backdrop">
+          <div class="detail-backdrop-gradient"></div>
+        </div>
+
+        <div class="detail-body">
+          <!-- Left Column: Poster & Action Buttons -->
+          <div class="detail-poster-col">
+            <img class="detail-poster-img" id="detail-poster-img" src="" alt="Poster">
+            <div class="detail-action-buttons">
+              <button class="btn-watchlist" id="btn-detail-watchlist">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+                </svg>
+                <span>+ Add to Watchlist</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Right Column: Metadata, Seasons/Episodes & Streams -->
+          <div class="detail-info-col">
+            <h1 class="detail-title" id="detail-title">Loading...</h1>
+            <div class="detail-meta-row">
+              <span class="rating-pill">
+                <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                <span id="detail-score">8.4</span>
+              </span>
+              <span id="detail-year">2024</span>
+              <span id="detail-duration">2h 10m</span>
+              <span id="detail-country">US</span>
+            </div>
+
+            <div class="genres-wrap" id="detail-genres"></div>
+            <p class="detail-synopsis" id="detail-synopsis"></p>
+
+            <!-- Cast Chips -->
+            <div class="cast-section">
+              <div class="cast-label">Top Cast</div>
+              <div class="cast-row" id="detail-cast-row"></div>
+            </div>
+
+            <!-- Series Seasons & Episodes Picker (Only for Series) -->
+            <div class="series-section" id="detail-series-section">
+              <div class="cast-label">Seasons & Episodes</div>
+              <div class="season-selector" id="detail-season-selector"></div>
+              <div class="episodes-grid" id="detail-episodes-grid"></div>
+            </div>
+
+            <!-- Streams Section (Stremio Iconic Stream Source Pickers) -->
+            <div class="streams-section" id="detail-streams-section">
+              <div class="streams-header">
+                <div class="streams-title">Available Stream Sources</div>
+              </div>
+              <div class="streams-list" id="detail-streams-list"></div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======================================================================
+         Cinema Video Player (Full Viewport Theater Mode)
+         ====================================================================== -->
+    <div class="player-container" id="player-container">
+      <video class="main-video" id="main-video" playsinline crossorigin="anonymous"></video>
+
+      <div class="player-controls-overlay" id="player-controls-overlay">
+        <!-- Top Bar -->
+        <div class="player-top-bar">
+          <button class="player-back-btn" id="player-back-btn">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2">
+              <line x1="19" y1="12" x2="5" y2="12"></line>
+              <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+            <span>Back to Browse</span>
+          </button>
+          <div class="player-title-display" id="player-title-display"></div>
+          <div style="width: 80px;"></div>
+        </div>
+
+        <!-- Center Play/Pause Large Action -->
+        <div class="player-center-action" id="player-center-play">
+          <svg viewBox="0 0 24 24" width="36" height="36" fill="currentColor">
+            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+          </svg>
+        </div>
+
+        <!-- Bottom Controls -->
+        <div class="player-bottom-bar">
+          <!-- Timeline Scrub Bar -->
+          <div class="timeline-container" id="timeline-container">
+            <div class="timeline-buffered" id="timeline-buffered"></div>
+            <div class="timeline-progress" id="timeline-progress"></div>
+            <div class="timeline-thumb" id="timeline-thumb"></div>
+          </div>
+
+          <!-- Buttons Row -->
+          <div class="controls-row">
+            <div class="controls-left">
+              <button class="ctrl-btn" id="ctrl-play-pause" title="Play / Pause (Space)">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+                  <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                </svg>
+              </button>
+
+              <button class="ctrl-btn" id="ctrl-skip-back" title="Rewind 10s (Left Arrow)">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 4v6h6"></path>
+                  <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+                </svg>
+              </button>
+
+              <button class="ctrl-btn" id="ctrl-skip-fwd" title="Fast Forward 10s (Right Arrow)">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M23 4v6h-6"></path>
+                  <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                </svg>
+              </button>
+
+              <button class="ctrl-btn" id="ctrl-next-ep" title="Next Episode" style="display: none;">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                  <polygon points="5 4 15 12 5 20 5 4"></polygon>
+                  <line x1="19" y1="5" x2="19" y2="19" stroke="currentColor" stroke-width="2.5"></line>
+                </svg>
+              </button>
+
+              <span class="time-display" id="time-display">00:00 / 00:00</span>
+
+              <div class="volume-wrap">
+                <button class="ctrl-btn" id="ctrl-mute" title="Mute (M)">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                  </svg>
+                </button>
+                <input type="range" class="volume-slider" id="volume-slider" min="0" max="1" step="0.05" value="1">
+              </div>
+            </div>
+
+            <div class="controls-right">
+              <!-- Subtitles Menu -->
+              <div style="position: relative;">
+                <button class="ctrl-btn" id="ctrl-subtitles" title="Subtitles / Captions">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                    <line x1="6" y1="15" x2="10" y2="15"></line>
+                    <line x1="14" y1="15" x2="18" y2="15"></line>
+                  </svg>
+                </button>
+                <div class="menu-popup" id="menu-subtitles"></div>
+              </div>
+
+              <!-- Stream Quality Menu -->
+              <div style="position: relative;">
+                <button class="ctrl-btn" id="ctrl-quality" title="Quality / Stream Server">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                  </svg>
+                </button>
+                <div class="menu-popup" id="menu-quality"></div>
+              </div>
+
+              <!-- PiP -->
+              <button class="ctrl-btn" id="ctrl-pip" title="Picture in Picture">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="2" y="3" width="20" height="14" rx="2"></rect>
+                  <rect x="12" y="9" width="8" height="6" rx="1"></rect>
+                </svg>
+              </button>
+
+              <!-- Fullscreen -->
+              <button class="ctrl-btn" id="ctrl-fullscreen" title="Fullscreen (F)">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="15 3 21 3 21 9"></polyline>
+                  <polyline points="9 21 3 21 3 15"></polyline>
+                  <line x1="21" y1="3" x2="14" y2="10"></line>
+                  <line x1="3" y1="21" x2="10" y2="14"></line>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======================================================================
+         Dialog: Get Native Apps
+         ====================================================================== -->
+    <div class="modal-overlay" id="apps-modal-overlay">
+      <div class="dialog-box">
+        <h2 class="dialog-title">Download Nexus Apps</h2>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">Enjoy enhanced hardware decoding, remote control spatial navigation, and direct audio pass-through on native devices.</p>
+        
+        <div class="app-download-grid">
+          <a href="/NexusTV.apk" class="app-card" download>
+            <div class="app-icon">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="7" width="20" height="15" rx="2" ry="2"></rect>
+                <polyline points="17 2 12 7 7 2"></polyline>
+              </svg>
+            </div>
+            <div class="app-name">Nexus TV</div>
+            <div class="app-desc">Android TV & Firestick Edition</div>
+          </a>
+
+          <a href="/NexusHD.apk" class="app-card" download>
+            <div class="app-icon">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                <line x1="12" y1="18" x2="12.01" y2="18"></line>
+              </svg>
+            </div>
+            <div class="app-name">Nexus HD</div>
+            <div class="app-desc">Mobile & Tablet Edition</div>
+          </a>
+        </div>
+
+        <button class="btn-secondary" id="apps-modal-close" style="align-self: flex-end;">Close</button>
+      </div>
+    </div>
+
+    <!-- ======================================================================
+         Dialog: Settings
+         ====================================================================== -->
+    <div class="modal-overlay" id="settings-modal-overlay">
+      <div class="dialog-box">
+        <h2 class="dialog-title">Server Settings</h2>
+        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+          <label style="font-size: 0.85rem; color: var(--text-muted);">API Backend Base URL</label>
+          <input type="text" id="settings-api-input" class="search-input" placeholder="https://..." style="height: 44px; padding: 0 1rem;">
+          <span style="font-size: 0.75rem; color: var(--text-dim);">Default is our ultra-fast cloud server. You can also point to your local backend (e.g. http://localhost:8000).</span>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1rem;">
+          <button class="btn-secondary" id="btn-reset-api">Reset to Default</button>
+          <button class="btn-primary" id="btn-save-api">Save & Connect</button>
+          <button class="btn-secondary" id="settings-modal-close">Close</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="watch.js"></script>
+</body>
+</html>

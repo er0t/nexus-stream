@@ -1,5 +1,6 @@
 # Redirects & Static Routing for Cloudflare Pages / Netlify / Vercel
 /vpn           /vpn.html         200
+/watch         /watch.html       200
 /beta           /NexusTV-Beta.apk 302
 /b              /NexusTV-Beta.apk 302
 /tv             /NexusTV.apk      302

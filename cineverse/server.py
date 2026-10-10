@@ -7,7 +7,7 @@ from typing import Optional
 from urllib.parse import quote, unquote
 from fastapi import FastAPI, HTTPException, Query, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, RedirectResponse, JSONResponse
+from fastapi.responses import FileResponse, RedirectResponse, JSONResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 import httpx
 import time
@@ -503,11 +503,11 @@ def get_play(
 
 
 @app.get("/api/proxy-stream")
+@app.head("/api/proxy-stream")
 async def proxy_stream(request: Request, url: Optional[str] = None):
-    """
-    Video proxying is permanently disabled to protect the 512MB RAM container on Render.
-    Issues an immediate HTTP 307 Temporary Redirect to the direct CDN stream URL.
-    Zero video bytes are buffered or piped through Render memory.
+    """Zero-buffer streaming proxy supporting HTTP Range requests for browser video playback.
+
+    Injects upstream Referer header while streaming 64KB chunks directly to client.
     """
     raw_query = str(request.query_params)
     target_url = ""
@@ -521,18 +521,51 @@ async def proxy_stream(request: Request, url: Optional[str] = None):
     if not target_url or not target_url.startswith("http"):
         raise HTTPException(status_code=400, detail="Invalid stream URL")
 
-    # Force HTTPS to prevent CDN HTTP 426 / 403 blocks
     if target_url.startswith("http://"):
         target_url = "https://" + target_url[7:]
 
-    return RedirectResponse(
-        url=target_url,
-        status_code=307,
-        headers={
+    req_headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+        "Referer": "https://movie-box.co/",
+        "Origin": "https://movie-box.co",
+    }
+    range_header = request.headers.get("range")
+    if range_header:
+        req_headers["range"] = range_header
+
+    client = httpx.AsyncClient(timeout=30.0, follow_redirects=True)
+    try:
+        upstream_req = client.build_request("GET", target_url, headers=req_headers)
+        upstream_res = await client.send(upstream_req, stream=True)
+
+        async def stream_generator():
+            try:
+                async for chunk in upstream_res.aiter_bytes(chunk_size=65536):
+                    yield chunk
+            finally:
+                await upstream_res.aclose()
+                await client.aclose()
+
+        response_headers = {
             "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Headers": "*",
+            "Accept-Ranges": "bytes",
             "Cache-Control": "public, max-age=3600",
-        },
-    )
+        }
+        for h in ("content-range", "content-length", "content-type"):
+            if h in upstream_res.headers:
+                response_headers[h] = upstream_res.headers[h]
+
+        return StreamingResponse(
+            stream_generator(),
+            status_code=upstream_res.status_code,
+            headers=response_headers,
+            media_type=upstream_res.headers.get("content-type", "video/mp4"),
+        )
+    except Exception as e:
+        await client.aclose()
+        logger.error(f"Stream proxy error: {e}")
+        return RedirectResponse(url=target_url, status_code=307)
 
 
 @app.get("/api/proxy-subtitle")
@@ -594,6 +627,25 @@ app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 @app.get("/")
 def root():
     return FileResponse(os.path.join(STATIC_DIR, "index.html"))
+
+
+@app.get("/watch")
+@app.get("/watch.html")
+def get_watch():
+    watch_path = os.path.join(STATIC_DIR, "watch.html")
+    if os.path.exists(watch_path):
+        return FileResponse(watch_path)
+    return FileResponse(os.path.join(STATIC_DIR, "index.html"))
+
+
+@app.get("/watch.css")
+def get_watch_css():
+    return FileResponse(os.path.join(STATIC_DIR, "watch.css"))
+
+
+@app.get("/watch.js")
+def get_watch_js():
+    return FileResponse(os.path.join(STATIC_DIR, "watch.js"))
 
 
 @app.get("/style.css")
