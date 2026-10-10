@@ -1,6 +1,7 @@
 {
   "cleanUrls": true,
   "redirects": [
+    { "source": "/vpn", "destination": "/vpn.html", "permanent": false },
     { "source": "/beta", "destination": "/NexusTV-Beta.apk", "permanent": false },
     { "source": "/b", "destination": "/NexusTV-Beta.apk", "permanent": false },
     { "source": "/tv", "destination": "/NexusTV.apk", "permanent": false },
