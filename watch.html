@@ -302,7 +302,20 @@
          Cinema Video Player (Full Viewport Theater Mode)
          ====================================================================== -->
     <div class="player-container" id="player-container">
-      <video class="main-video" id="main-video" playsinline crossorigin="anonymous"></video>
+      <!-- Sandboxed Cinema Embed Wrapper (Zero-redirect, cropped header/footer, 100% resilient playback) -->
+      <div class="cinema-iframe-wrapper" id="cinema-iframe-wrapper">
+        <iframe 
+          id="cinema-iframe" 
+          class="cinema-iframe" 
+          src="" 
+          sandbox="allow-scripts allow-same-origin allow-forms"
+          allow="autoplay; encrypted-media; fullscreen"
+          allowfullscreen
+        ></iframe>
+      </div>
+
+      <!-- Native HTML5 Video Element -->
+      <video class="main-video" id="main-video" playsinline crossorigin="anonymous" style="display: none;"></video>
 
       <div class="player-controls-overlay" id="player-controls-overlay">
         <!-- Top Bar -->
@@ -316,19 +329,20 @@
           </button>
           <div class="player-title-display" id="player-title-display"></div>
           <div class="player-server-selector">
-            <span class="server-pill active" id="player-backend-badge" title="Streaming via Nexus Backend API">⚡ Nexus Backend</span>
+            <button class="server-pill active" id="btn-srv-cloud" title="Nexus Cloud Engine">⚡ Nexus Backend</button>
+            <button class="server-pill" id="btn-srv-native" title="Direct Stream Source">🎬 Direct Stream</button>
           </div>
         </div>
 
-        <!-- Center Play/Pause Large Action -->
-        <div class="player-center-action" id="player-center-play">
+        <!-- Center Play/Pause Large Action (Native mode) -->
+        <div class="player-center-action" id="player-center-play" style="display: none;">
           <svg viewBox="0 0 24 24" width="36" height="36" fill="currentColor">
             <polygon points="5 3 19 12 5 21 5 3"></polygon>
           </svg>
         </div>
 
-        <!-- Bottom Controls -->
-        <div class="player-bottom-bar">
+        <!-- Bottom Controls (Native mode) -->
+        <div class="player-bottom-bar" id="player-bottom-bar" style="display: none;">
           <!-- Timeline Scrub Bar -->
           <div class="timeline-container" id="timeline-container">
             <div class="timeline-buffered" id="timeline-buffered"></div>

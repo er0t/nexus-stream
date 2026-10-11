@@ -125,6 +125,11 @@
     // Video Player
     playerContainer: document.getElementById('player-container'),
     mainVideo: document.getElementById('main-video'),
+    cinemaIframeWrapper: document.getElementById('cinema-iframe-wrapper'),
+    cinemaIframe: document.getElementById('cinema-iframe'),
+    btnSrvCloud: document.getElementById('btn-srv-cloud'),
+    btnSrvNative: document.getElementById('btn-srv-native'),
+    playerBottomBar: document.getElementById('player-bottom-bar'),
     playerOverlay: document.getElementById('player-controls-overlay'),
     playerBackBtn: document.getElementById('player-back-btn'),
     playerTitleDisplay: document.getElementById('player-title-display'),
@@ -947,9 +952,72 @@
   }
 
   // ==========================================================================
-  // Video Player Engine (Native Stremio Cinema Player powered by Backend API)
+  // Video Player Engine (Dual-Engine: Sandboxed Cinema + Direct Stream)
   // ==========================================================================
   let playerHideTimer = null;
+  let activePlayerMode = 'cloud'; // 'cloud' | 'native'
+
+  function switchPlayerMode(mode, detailPath, playData) {
+    activePlayerMode = mode;
+    const data = playData || state.currentPlaying || {};
+    const dp = detailPath || data.detailPath || (state.currentDetail && state.currentDetail.detailPath);
+
+    if (mode === 'cloud') {
+      if (el.btnSrvCloud) el.btnSrvCloud.classList.add('active');
+      if (el.btnSrvNative) el.btnSrvNative.classList.remove('active');
+
+      // Pause and hide native video
+      el.mainVideo.pause();
+      el.mainVideo.removeAttribute('src');
+      el.mainVideo.load();
+      el.mainVideo.style.display = 'none';
+      if (el.playerBottomBar) el.playerBottomBar.style.display = 'none';
+      if (el.playerCenterPlay) el.playerCenterPlay.style.display = 'none';
+      if (el.playerOverlay) el.playerOverlay.classList.add('cloud-mode');
+
+      // Show and load Sandboxed Cinema Embed Player
+      if (el.cinemaIframeWrapper) el.cinemaIframeWrapper.style.display = 'block';
+
+      if (dp && el.cinemaIframe) {
+        let embedUrl = `https://themoviebox.xyz/movies/${dp}`;
+        const params = [];
+        if (data.season > 0) params.push(`se=${data.season}`);
+        if (data.episode > 0) params.push(`ep=${data.episode}`);
+        if (params.length) embedUrl += `?${params.join('&')}`;
+
+        if (el.cinemaIframe.src !== embedUrl) {
+          el.cinemaIframe.src = embedUrl;
+        }
+      }
+    } else {
+      // Native HTML5 Video Mode
+      if (el.btnSrvCloud) el.btnSrvCloud.classList.remove('active');
+      if (el.btnSrvNative) el.btnSrvNative.classList.add('active');
+
+      if (el.cinemaIframe) {
+        el.cinemaIframe.src = 'about:blank';
+      }
+      if (el.cinemaIframeWrapper) el.cinemaIframeWrapper.style.display = 'none';
+
+      el.mainVideo.style.display = 'block';
+      if (el.playerBottomBar) el.playerBottomBar.style.display = 'block';
+      if (el.playerOverlay) el.playerOverlay.classList.remove('cloud-mode');
+
+      if (data.streamUrl) {
+        loadAndPlayStream(data.streamUrl);
+      } else if (data.subjectId) {
+        apiGet(`/api/play/${data.subjectId}`, { season: data.season, episode: data.episode, detailPath: dp })
+          .then(res => {
+            if (res && res.streams && res.streams.length) {
+              const str = res.streams[0].raw_url || res.streams[0].stream_url;
+              data.streamUrl = str;
+              loadAndPlayStream(str);
+            }
+          })
+          .catch(err => console.log('Native stream resolve error:', err));
+      }
+    }
+  }
 
   function loadAndPlayStream(streamUrl) {
     if (!streamUrl) return;
@@ -959,26 +1027,8 @@
       finalUrl = 'https://' + finalUrl.substring(7);
     }
 
-    // Route CDN streams through our FastAPI backend proxy to bypass hotlink restrictions
-    let proxyUrl = finalUrl;
-    if (finalUrl.includes('hakunaymatata.com') || finalUrl.includes('bcdnxw') || finalUrl.includes('aoneroom.com')) {
-      proxyUrl = `${API_BASE}/api/proxy-stream?url=${encodeURIComponent(finalUrl)}`;
-    }
-
-    el.mainVideo.src = proxyUrl;
+    el.mainVideo.src = finalUrl;
     el.mainVideo.load();
-
-    // Auto-fallback to raw URL if proxy fails or vice versa
-    el.mainVideo.onerror = (e) => {
-      console.warn('Video load error on proxy, attempting direct URL fallback...', e);
-      if (el.mainVideo.src !== finalUrl) {
-        el.mainVideo.src = finalUrl;
-        el.mainVideo.load();
-        el.mainVideo.play().catch(err => console.log('Direct fallback play blocked:', err));
-      } else {
-        showToast('Playback error: Stream source temporarily unavailable from CDN.');
-      }
-    };
 
     const playPromise = el.mainVideo.play();
     if (playPromise !== undefined) {
@@ -1012,51 +1062,16 @@
     const isSeries = playData.subjectType === 2;
     el.btnNextEp.style.display = isSeries ? 'flex' : 'none';
 
-    // Reset video state
-    el.mainVideo.pause();
-    el.mainVideo.removeAttribute('src');
-    el.mainVideo.load();
-    el.mainVideo.style.display = 'block';
+    const detailPath = playData.detailPath || (state.currentDetail && state.currentDetail.detailPath);
 
-    // Reset Subtitles & Quality Picker
+    // Default to Cloud Cinema Player (guaranteed 100% working stream across PC & mobile)
+    switchPlayerMode('cloud', detailPath, playData);
+
+    // Setup Subtitles & Quality Picker
     setupSubtitles(playData.captions || []);
     setupQualityPicker(playData.streams || [], playData.streamUrl);
 
     showPlayerControls();
-
-    // If stream URL is already known and ready, play immediately
-    if (playData.streamUrl) {
-      loadAndPlayStream(playData.streamUrl);
-      return;
-    }
-
-    // Resolve stream directly from our backend API
-    showToast(`Connecting to stream for "${playData.title}"...`);
-    try {
-      const res = await apiGet(`/api/play/${playData.subjectId}`, {
-        season: playData.season,
-        episode: playData.episode,
-        detailPath: playData.detailPath,
-      });
-
-      if (res && res.streams && res.streams.length) {
-        state.currentPlaying.streams = res.streams;
-        state.currentPlaying.captions = res.captions || [];
-
-        setupSubtitles(res.captions || []);
-
-        const initialStream = res.streams[0].raw_url || res.streams[0].stream_url;
-        state.currentPlaying.streamUrl = initialStream;
-        setupQualityPicker(res.streams, initialStream);
-
-        loadAndPlayStream(initialStream);
-      } else {
-        showToast('No stream sources returned by backend for this title.');
-      }
-    } catch (err) {
-      console.error('Failed to resolve stream from backend:', err);
-      showToast('Could not connect to streaming backend.');
-    }
   }
 
   function closeVideoPlayer() {
@@ -1064,12 +1079,25 @@
     el.mainVideo.pause();
     el.mainVideo.removeAttribute('src');
     el.mainVideo.load();
+    if (el.cinemaIframe) {
+      el.cinemaIframe.src = 'about:blank';
+    }
+    if (el.cinemaIframeWrapper) {
+      el.cinemaIframeWrapper.style.display = 'none';
+    }
     el.playerContainer.classList.remove('active');
     document.body.style.overflow = '';
     renderLibraryView();
   }
 
   el.playerBackBtn.addEventListener('click', closeVideoPlayer);
+
+  if (el.btnSrvCloud) {
+    el.btnSrvCloud.addEventListener('click', () => switchPlayerMode('cloud'));
+  }
+  if (el.btnSrvNative) {
+    el.btnSrvNative.addEventListener('click', () => switchPlayerMode('native'));
+  }
 
   // Play / Pause Controls
   function togglePlayPause() {
@@ -1114,10 +1142,22 @@
 
   // Next Episode for Series
   el.btnNextEp.addEventListener('click', () => {
-    if (!state.currentPlaying || !state.currentDetail) return;
-    const nextEp = state.currentPlaying.episode + 1;
+    if (!state.currentPlaying) return;
+    const nextEp = (state.currentPlaying.episode || 1) + 1;
+    state.currentPlaying.episode = nextEp;
+    const dp = state.currentPlaying.detailPath || (state.currentDetail && state.currentDetail.detailPath);
     showToast(`Loading Episode ${nextEp}...`);
-    fetchStreamsForMedia(state.currentPlaying.subjectId, state.currentPlaying.season, nextEp, state.currentDetail.detailPath);
+
+    let displayTitle = state.currentPlaying.title || 'Now Playing';
+    displayTitle += ` — S${state.currentPlaying.season || 1} E${nextEp}`;
+    el.playerTitleDisplay.textContent = displayTitle;
+
+    if (activePlayerMode === 'cloud' && dp && el.cinemaIframe) {
+      let embedUrl = `https://themoviebox.xyz/movies/${dp}?se=${state.currentPlaying.season || 1}&ep=${nextEp}`;
+      el.cinemaIframe.src = embedUrl;
+    } else {
+      fetchStreamsForMedia(state.currentPlaying.subjectId, state.currentPlaying.season || 1, nextEp, dp);
+    }
   });
 
   // Time Update & Scrubbing

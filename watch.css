@@ -1475,6 +1475,34 @@ body {
   z-index: 4;
 }
 
+/* Sandboxed Cinema Iframe Player (Zero redirect, cropped header/footer) */
+.cinema-iframe-wrapper {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #030712;
+  z-index: 2;
+}
+
+.cinema-iframe {
+  position: absolute;
+  top: -65px;
+  left: 0;
+  width: 100%;
+  height: calc(100% + 140px);
+  border: none;
+  background: #030712;
+}
+
+@media (max-width: 768px) {
+  .cinema-iframe {
+    top: -55px;
+    height: calc(100% + 120px);
+  }
+}
+
 ::cue {
   background-color: rgba(3, 7, 18, 0.85);
   color: #fff;
@@ -1492,17 +1520,21 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 1.75rem 2.5rem;
+  padding: 1.25rem 1.75rem;
   background: linear-gradient(180deg, rgba(0,0,0,0.85) 0%, transparent 22%, transparent 70%, rgba(0,0,0,0.95) 100%);
-  opacity: 0;
+  opacity: 1;
   transition: opacity 0.3s ease;
   pointer-events: none;
   z-index: 20;
 }
 
-.player-container:hover .player-controls-overlay,
-.player-controls-overlay.visible {
-  opacity: 1;
+.player-controls-overlay.cloud-mode {
+  background: transparent;
+}
+
+.player-top-bar,
+.player-bottom-bar,
+.player-center-action {
   pointer-events: auto;
 }
 
@@ -1512,7 +1544,10 @@ body {
   justify-content: space-between;
   gap: 1rem;
   z-index: 50;
-  pointer-events: auto;
+  background: linear-gradient(180deg, rgba(3, 7, 18, 0.95) 0%, rgba(3, 7, 18, 0.7) 80%, transparent 100%);
+  padding: 0.6rem 1rem;
+  border-radius: var(--radius-md);
+  backdrop-filter: blur(10px);
 }
 
 .player-server-selector {
