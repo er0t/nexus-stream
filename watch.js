@@ -959,8 +959,26 @@
       finalUrl = 'https://' + finalUrl.substring(7);
     }
 
-    el.mainVideo.src = finalUrl;
+    // Route CDN streams through our FastAPI backend proxy to bypass hotlink restrictions
+    let proxyUrl = finalUrl;
+    if (finalUrl.includes('hakunaymatata.com') || finalUrl.includes('bcdnxw') || finalUrl.includes('aoneroom.com')) {
+      proxyUrl = `${API_BASE}/api/proxy-stream?url=${encodeURIComponent(finalUrl)}`;
+    }
+
+    el.mainVideo.src = proxyUrl;
     el.mainVideo.load();
+
+    // Auto-fallback to raw URL if proxy fails or vice versa
+    el.mainVideo.onerror = (e) => {
+      console.warn('Video load error on proxy, attempting direct URL fallback...', e);
+      if (el.mainVideo.src !== finalUrl) {
+        el.mainVideo.src = finalUrl;
+        el.mainVideo.load();
+        el.mainVideo.play().catch(err => console.log('Direct fallback play blocked:', err));
+      } else {
+        showToast('Playback error: Stream source temporarily unavailable from CDN.');
+      }
+    };
 
     const playPromise = el.mainVideo.play();
     if (playPromise !== undefined) {

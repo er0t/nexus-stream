@@ -526,21 +526,27 @@ async def proxy_stream(request: Request, url: Optional[str] = None):
 
     req_headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-        "Referer": "https://movie-box.co/",
-        "Origin": "https://movie-box.co",
+        "Referer": "https://themoviebox.xyz/",
+        "Origin": "https://themoviebox.xyz",
         "Accept": "*/*",
-        "Sec-Fetch-Dest": "video",
-        "Sec-Fetch-Mode": "cors",
-        "Sec-Fetch-Site": "cross-site",
+        "Connection": "keep-alive",
     }
     range_header = request.headers.get("range")
     if range_header:
         req_headers["range"] = range_header
 
-    client = httpx.AsyncClient(http2=True, timeout=30.0, follow_redirects=True)
+    client = httpx.AsyncClient(http2=False, timeout=30.0, follow_redirects=True)
     try:
         upstream_req = client.build_request("GET", target_url, headers=req_headers)
         upstream_res = await client.send(upstream_req, stream=True)
+
+        if upstream_res.status_code in (426, 429, 403):
+            await upstream_res.aclose()
+            # Retry with movie-box.co referer
+            req_headers["Referer"] = "https://movie-box.co/"
+            req_headers["Origin"] = "https://movie-box.co"
+            upstream_req = client.build_request("GET", target_url, headers=req_headers)
+            upstream_res = await client.send(upstream_req, stream=True)
 
         async def stream_generator():
             try:
