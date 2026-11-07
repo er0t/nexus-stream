@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Nexus Ecosystem - Stream Without Interruptions | Nexus HD & Nexus TV</title>
   <meta name="description" content="Download Nexus HD for Android Mobile and Nexus TV for Android TV & Firestick. Clean streaming, gesture controls, 4K/1080p, and zero mid-roll video interruptions.">
-  <meta name="keywords" content="Nexus HD, Nexus TV, Android TV streaming, Firestick Downloader, APK download, Ad-Supported streaming">
+  <meta name="keywords" content="Nexus HD, Nexus TV, Android TV streaming, Firestick Downloader, Browsy, APK download, Ad-Supported streaming">
   
   <!-- HilltopAds Site Verification -->
   <meta name="hilltopads-site-verification" content="7695a344518108a1edc2">
@@ -356,24 +356,49 @@
               </div>
             </div>
 
-            <!-- Downloader Code Terminal Pill -->
+            <!-- TV Sideload Codes (Downloader & Browsy) -->
             <div class="mb-6 p-3.5 rounded-xl bg-slate-950/90 border border-emerald-500/30 shadow-inner">
-              <div class="flex items-center justify-between text-xs text-slate-400 mb-1.5">
+              <div class="flex items-center justify-between text-xs text-slate-400 mb-2">
                 <span class="flex items-center gap-1.5 text-emerald-400 font-bold">
                   <i data-lucide="terminal" class="w-3.5 h-3.5"></i>
-                  Firestick Downloader Code
+                  TV App Sideload Codes
                 </span>
                 <span class="text-[10px] text-slate-500 font-mono">Quick TV Sideload</span>
               </div>
-              <div class="flex items-center justify-between bg-slate-900/80 px-3 py-2 rounded-lg border border-slate-800">
-                <div class="flex items-center gap-2">
-                  <span class="text-xs text-slate-500 font-mono">$</span>
-                  <span id="downloader-code" class="text-base font-mono font-extrabold text-emerald-300 tracking-wider">5012672</span>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                <!-- Downloader Code Box -->
+                <div class="flex items-center justify-between bg-slate-900/80 px-3 py-2.5 rounded-lg border border-slate-800">
+                  <div class="flex flex-col">
+                    <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider flex items-center gap-1.5 mb-0.5">
+                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block"></span>Downloader
+                    </span>
+                    <div class="flex items-center gap-1.5">
+                      <span class="text-xs text-slate-500 font-mono">$</span>
+                      <span id="downloader-code" class="text-sm sm:text-base font-mono font-extrabold text-emerald-300 tracking-wider">5012672</span>
+                    </div>
+                  </div>
+                  <button id="copy-btn" onclick="copyDownloaderCode()" class="flex items-center gap-1 px-2.5 py-1.5 rounded-md bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 text-xs font-semibold transition-all">
+                    <i id="copy-icon" data-lucide="copy" class="w-3.5 h-3.5"></i>
+                    <span id="copy-text">Copy</span>
+                  </button>
                 </div>
-                <button id="copy-btn" onclick="copyDownloaderCode()" class="flex items-center gap-1.5 px-3 py-1 rounded-md bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 text-xs font-semibold transition-all">
-                  <i id="copy-icon" data-lucide="copy" class="w-3.5 h-3.5"></i>
-                  <span id="copy-text">Copy Code</span>
-                </button>
+
+                <!-- Browsy Code Box -->
+                <div class="flex items-center justify-between bg-slate-900/80 px-3 py-2.5 rounded-lg border border-slate-800">
+                  <div class="flex flex-col">
+                    <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider flex items-center gap-1.5 mb-0.5">
+                      <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 inline-block"></span>Browsy
+                    </span>
+                    <div class="flex items-center gap-1.5">
+                      <span class="text-xs text-slate-500 font-mono">$</span>
+                      <span id="browsy-code" class="text-sm sm:text-base font-mono font-extrabold text-cyan-300 tracking-wider">9577</span>
+                    </div>
+                  </div>
+                  <button id="copy-browsy-btn" onclick="copyBrowsyCode()" class="flex items-center gap-1 px-2.5 py-1.5 rounded-md bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-500/40 text-xs font-semibold transition-all">
+                    <i id="copy-browsy-icon" data-lucide="copy" class="w-3.5 h-3.5"></i>
+                    <span id="copy-browsy-text">Copy</span>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -498,31 +523,47 @@
       <div id="tab-content-tv" class="hidden glass-panel rounded-2xl p-6 sm:p-8 border border-slate-800">
         <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
           <i data-lucide="tv" class="w-5 h-5 text-emerald-400"></i>
-          Installing Nexus TV via the Downloader App
+          Installing Nexus TV via Downloader or Browsy
         </h3>
         <ol class="space-y-4 text-sm text-slate-300">
           <li class="flex items-start gap-3.5">
             <span class="flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 font-mono font-bold text-xs flex-shrink-0 mt-0.5">1</span>
             <div>
-              <strong class="text-white">Get Downloader:</strong> On your Firestick or Android TV, search for and install the free orange <strong class="text-emerald-300">Downloader</strong> app by AFTVnews.
+              <strong class="text-white">Get Downloader or Browsy:</strong> On your Firestick or Android TV / Google TV, search for and install either the free orange <strong class="text-emerald-300">Downloader</strong> app by AFTVnews or the <strong class="text-cyan-300">Browsy</strong> browser from your TV app store.
             </div>
           </li>
           <li class="flex items-start gap-3.5">
             <span class="flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 font-mono font-bold text-xs flex-shrink-0 mt-0.5">2</span>
             <div>
-              <strong class="text-white">Enable Developer Options:</strong> Navigate to <em>Settings > My Fire TV > Developer Options > Install unknown apps</em>, and toggle <strong>Downloader</strong> to <span class="text-emerald-400 font-semibold">ON</span>.
+              <strong class="text-white">Enable Developer Options:</strong> Navigate to <em>Settings > My Fire TV (or Device Preferences) > Developer Options > Install unknown apps</em>, and toggle <strong>Downloader</strong> or <strong>Browsy</strong> to <span class="text-emerald-400 font-semibold">ON</span>.
             </div>
           </li>
           <li class="flex items-start gap-3.5">
             <span class="flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 font-mono font-bold text-xs flex-shrink-0 mt-0.5">3</span>
             <div>
-              <strong class="text-white">Enter Downloader Code:</strong> Open Downloader, enter numeric shortcode <strong class="text-emerald-400 font-mono bg-slate-900 px-2 py-0.5 rounded border border-slate-800">5012672</strong> in the URL box, and select <strong>Go</strong>.
+              <strong class="text-white">Enter Sideload Code:</strong> Open your app and enter the corresponding numeric shortcode:
+              <div class="mt-2.5 grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-w-lg">
+                <div class="p-2.5 rounded-lg bg-slate-900/90 border border-slate-800 flex items-center justify-between">
+                  <div>
+                    <span class="text-[11px] text-slate-400 block font-medium">Downloader Code</span>
+                    <strong class="text-emerald-400 font-mono text-sm">5012672</strong>
+                  </div>
+                  <span class="text-[10px] text-slate-500 font-mono bg-slate-950 px-2 py-0.5 rounded border border-slate-800">URL &rarr; Go</span>
+                </div>
+                <div class="p-2.5 rounded-lg bg-slate-900/90 border border-slate-800 flex items-center justify-between">
+                  <div>
+                    <span class="text-[11px] text-slate-400 block font-medium">Browsy Code</span>
+                    <strong class="text-cyan-400 font-mono text-sm">9577</strong>
+                  </div>
+                  <span class="text-[10px] text-slate-500 font-mono bg-slate-950 px-2 py-0.5 rounded border border-slate-800">Code &rarr; Open</span>
+                </div>
+              </div>
             </div>
           </li>
           <li class="flex items-start gap-3.5">
             <span class="flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 font-mono font-bold text-xs flex-shrink-0 mt-0.5">4</span>
             <div>
-              <strong class="text-white">Install & Open:</strong> Once the download finishes, select <strong>Install</strong> on the screen prompt. You can now launch Nexus TV from your Apps row!
+              <strong class="text-white">Install &amp; Open:</strong> Once the download finishes, select <strong>Install</strong> on the screen prompt. You can now launch Nexus TV from your Apps row!
             </div>
           </li>
         </ol>
@@ -576,15 +617,15 @@
 
   </div>
 
-  <!-- Toast Notification for Downloader Code Copy -->
+  <!-- Toast Notification for Code Copy -->
   <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
     <div class="flex items-center gap-3 px-4 py-3 rounded-xl bg-slate-900 border border-emerald-500/50 shadow-2xl text-white text-xs">
-      <div class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center flex-shrink-0">
+      <div id="toast-icon-wrap" class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center flex-shrink-0">
         <i data-lucide="check" class="w-4 h-4"></i>
       </div>
       <div>
-        <div class="font-bold text-emerald-300">Code Copied to Clipboard!</div>
-        <div class="text-slate-400 text-[11px]">Enter 5012672 in your Fire TV Downloader app.</div>
+        <div id="toast-title" class="font-bold text-emerald-300">Code Copied to Clipboard!</div>
+        <div id="toast-desc" class="text-slate-400 text-[11px]">Enter 5012672 in your Fire TV Downloader app.</div>
       </div>
     </div>
   </div>
@@ -615,10 +656,9 @@
       lucide.createIcons();
     }
 
-    // Downloader Code Copy Functionality
-    function copyDownloaderCode() {
-      const code = document.getElementById('downloader-code').innerText.trim();
-      
+    // Sideload Code Copy Functionality (Downloader & Browsy)
+    let toastTimeout = null;
+    function copyCode(code, btnId, textId, appName) {
       const copyToClipboard = () => {
         if (navigator.clipboard && window.isSecureContext) {
           return navigator.clipboard.writeText(code);
@@ -642,26 +682,52 @@
 
       copyToClipboard().then(() => {
         // Update button visual state
-        const copyText = document.getElementById('copy-text');
-        const copyBtn = document.getElementById('copy-btn');
-        copyText.innerText = 'Copied!';
-        copyBtn.classList.remove('bg-emerald-500/20', 'text-emerald-300');
-        copyBtn.classList.add('bg-emerald-500', 'text-slate-950');
+        const copyText = document.getElementById(textId);
+        const copyBtn = document.getElementById(btnId);
+        const isBrowsy = appName === 'Browsy';
+
+        if (copyText) copyText.innerText = 'Copied!';
+        if (copyBtn) {
+          copyBtn.classList.remove('bg-emerald-500/20', 'bg-cyan-500/20', 'text-emerald-300', 'text-cyan-300');
+          copyBtn.classList.add(isBrowsy ? 'bg-cyan-500' : 'bg-emerald-500', 'text-slate-950');
+        }
 
         // Show Toast Notification
         const toast = document.getElementById('toast');
+        const toastTitle = document.getElementById('toast-title');
+        const toastDesc = document.getElementById('toast-desc');
+
+        if (toastTitle) toastTitle.innerText = `${appName} Code Copied!`;
+        if (toastDesc) toastDesc.innerText = isBrowsy ? `Enter ${code} in your Browsy app on TV.` : `Enter ${code} in your Fire TV Downloader app.`;
+
         toast.classList.remove('translate-y-20', 'opacity-0');
         toast.classList.add('translate-y-0', 'opacity-100');
 
-        setTimeout(() => {
-          copyText.innerText = 'Copy Code';
-          copyBtn.classList.add('bg-emerald-500/20', 'text-emerald-300');
-          copyBtn.classList.remove('bg-emerald-500', 'text-slate-950');
-          
+        if (toastTimeout) clearTimeout(toastTimeout);
+        toastTimeout = setTimeout(() => {
+          if (copyText) copyText.innerText = 'Copy';
+          if (copyBtn) {
+            copyBtn.classList.remove('bg-emerald-500', 'bg-cyan-500', 'text-slate-950');
+            if (isBrowsy) {
+              copyBtn.classList.add('bg-cyan-500/20', 'text-cyan-300');
+            } else {
+              copyBtn.classList.add('bg-emerald-500/20', 'text-emerald-300');
+            }
+          }
           toast.classList.remove('translate-y-0', 'opacity-100');
           toast.classList.add('translate-y-20', 'opacity-0');
         }, 3000);
       });
+    }
+
+    function copyDownloaderCode() {
+      const code = document.getElementById('downloader-code')?.innerText.trim() || '5012672';
+      copyCode(code, 'copy-btn', 'copy-text', 'Downloader');
+    }
+
+    function copyBrowsyCode() {
+      const code = document.getElementById('browsy-code')?.innerText.trim() || '9577';
+      copyCode(code, 'copy-browsy-btn', 'copy-browsy-text', 'Browsy');
     }
   </script>
 </body>
